@@ -1,20 +1,20 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2024 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -59,14 +59,14 @@ CAN_FilterTypeDef CAN2_sFilterConfig;
 uint32_t CAN1_pTxMailbox;
 uint32_t CAN2_pTxMailbox;
 
-uint8_t CAN1_DATA_TX[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x00};
-uint8_t CAN1_DATA_RX[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x00};
-uint8_t CAN2_DATA_TX[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x02,0x00};
-uint8_t CAN2_DATA_RX[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x05,0x00};
+uint8_t CAN1_DATA_TX[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00};
+uint8_t CAN1_DATA_RX[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00};
+uint8_t CAN2_DATA_TX[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00};
+uint8_t CAN2_DATA_RX[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00};
 
 uint16_t NumBytesReq = 0;
-uint8_t  REQ_BUFFER  [4096];
-uint8_t  REQ_1BYTE_DATA;
+uint8_t REQ_BUFFER[4096];
+uint8_t REQ_1BYTE_DATA;
 
 unsigned int TimeStamp;
 char bufsend[30] = "XXX: D1 D2 D3 D4 D5 D6 D7 D8  ";
@@ -79,9 +79,17 @@ static void MX_CAN1_Init(void);
 static void MX_CAN2_Init(void);
 static void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN PFP */
-void USART3_SendString(char* ch);
+void USART3_SendString(char *ch);
 void PrintCANLog(uint16_t CANID, uint8_t *CAN_Frame);
 uint8_t calc_crc(uint8_t *data, uint8_t crc_len);
+
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  REQ_BUFFER[NumBytesReq] = REQ_1BYTE_DATA;
+  NumBytesReq++;
+  // REQ_BUFFER[7] = NumBytesReq;
+}
 
 void MX_CAN1_Setup();
 void MX_CAN2_Setup();
@@ -94,9 +102,9 @@ void MX_CAN2_Setup();
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
+ * @brief  The application entry point.
+ * @retval int
+ */
 int main(void)
 {
 
@@ -137,6 +145,9 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+    CAN1_SendRequest();
+    SID_22_Practice();
+    HAL_Delay(2000);
 
     /* USER CODE BEGIN 3 */
   }
@@ -144,22 +155,22 @@ int main(void)
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+ * @brief System Clock Configuration
+ * @retval None
+ */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
-  */
+   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
+   * in the RCC_OscInitTypeDef structure.
+   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -175,9 +186,8 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV8;
@@ -190,10 +200,10 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief CAN1 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief CAN1 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_CAN1_Init(void)
 {
 
@@ -223,14 +233,13 @@ static void MX_CAN1_Init(void)
   /* USER CODE BEGIN CAN1_Init 2 */
 
   /* USER CODE END CAN1_Init 2 */
-
 }
 
 /**
-  * @brief CAN2 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief CAN2 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_CAN2_Init(void)
 {
 
@@ -260,14 +269,13 @@ static void MX_CAN2_Init(void)
   /* USER CODE BEGIN CAN2_Init 2 */
 
   /* USER CODE END CAN2_Init 2 */
-
 }
 
 /**
-  * @brief USART3 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief USART3 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_USART3_UART_Init(void)
 {
 
@@ -293,19 +301,18 @@ static void MX_USART3_UART_Init(void)
   /* USER CODE BEGIN USART3_Init 2 */
 
   /* USER CODE END USART3_Init 2 */
-
 }
 
 /**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief GPIO Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
+  /* USER CODE BEGIN MX_GPIO_Init_1 */
+  /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -315,8 +322,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : PC13 PC4 PC5 PC6
                            PC7 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13|GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6
-                          |GPIO_PIN_7;
+  GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -340,8 +346,8 @@ static void MX_GPIO_Init(void)
   HAL_NVIC_SetPriority(EXTI1_IRQn, 2, 0);
   HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
+  /* USER CODE BEGIN MX_GPIO_Init_2 */
+  /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
@@ -353,14 +359,14 @@ void MX_CAN1_Setup()
   CAN1_sFilterConfig.FilterBank = 8;
   CAN1_sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
   CAN1_sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT;
-  CAN1_sFilterConfig.FilterIdHigh = 0x0A2 << 5;
+  CAN1_sFilterConfig.FilterIdHigh = 0x712 << 5;
   CAN1_sFilterConfig.FilterIdLow = 0;
-  CAN1_sFilterConfig.FilterMaskIdHigh = 0x0A2 << 5;
+  CAN1_sFilterConfig.FilterMaskIdHigh = 0x712 << 5;
   CAN1_sFilterConfig.FilterMaskIdLow = 0;
 
-	HAL_CAN_ConfigFilter(&hcan1, &CAN1_sFilterConfig);
-	HAL_CAN_Start(&hcan1);
-	HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
+  HAL_CAN_ConfigFilter(&hcan1, &CAN1_sFilterConfig);
+  HAL_CAN_Start(&hcan1);
+  HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
 }
 
 void MX_CAN2_Setup(void)
@@ -371,88 +377,91 @@ void MX_CAN2_Setup(void)
   CAN2_sFilterConfig.FilterBank = 19;
   CAN2_sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
   CAN2_sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT;
-  CAN2_sFilterConfig.FilterIdHigh = 0x012 << 5;
+  CAN2_sFilterConfig.FilterIdHigh = 0x7A2 << 5;
   CAN2_sFilterConfig.FilterIdLow = 0;
-  CAN2_sFilterConfig.FilterMaskIdHigh = 0x012 << 5;
+  CAN2_sFilterConfig.FilterMaskIdHigh = 0x7A2 << 5;
   CAN2_sFilterConfig.FilterMaskIdLow = 0;
+
+  HAL_CAN_ConfigFilter(&hcan2, &CAN2_sFilterConfig);
+  HAL_CAN_Start(&hcan2);
+  HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);
 }
 
-void USART3_SendString(char* ch)
+void USART3_SendString(char *ch)
 {
-   while(*ch != 0)
-   {
-      HAL_UART_Transmit(&huart3, ch, 1,HAL_MAX_DELAY);
-      ch++;
-   }
+  while (*ch != 0)
+  {
+    HAL_UART_Transmit(&huart3, ch, 1, HAL_MAX_DELAY);
+    ch++;
+  }
 }
 
 void PrintCANLog(uint16_t CANID, uint8_t *CAN_Frame)
 {
   uint16_t loopIndx = 0;
-	char bufID[3] = "   ";
-	char bufDat[2] = "  ";
-	char bufTime [8]="        ";
+  char bufID[3] = "   ";
+  char bufDat[2] = "  ";
+  char bufTime[8] = "        ";
 
-	sprintf(bufTime,"%d",TimeStamp);
-	USART3_SendString((uint8_t*)bufTime);
-	USART3_SendString((uint8_t*)" ");
+  sprintf(bufTime, "%d", TimeStamp);
+  USART3_SendString((uint8_t *)bufTime);
+  USART3_SendString((uint8_t *)" ");
 
-	sprintf(bufID,"%03X",CANID);
-	for(loopIndx = 0; loopIndx < 3; loopIndx ++)
-	{
-		bufsend[loopIndx]  = bufID[loopIndx];
-	}
-	bufsend[3] = ':';
-	bufsend[4] = ' ';
+  sprintf(bufID, "%03X", CANID);
+  for (loopIndx = 0; loopIndx < 3; loopIndx++)
+  {
+    bufsend[loopIndx] = bufID[loopIndx];
+  }
+  bufsend[3] = ':';
+  bufsend[4] = ' ';
 
-
-	for(loopIndx = 0; loopIndx < 8; loopIndx ++ )
-	{
-		sprintf(bufDat,"%02X",CAN_Frame[loopIndx]);
-		bufsend[loopIndx*3 + 5] = bufDat[0];
-		bufsend[loopIndx*3 + 6] = bufDat[1];
-		bufsend[loopIndx*3 + 7] = ' ';
-	}
-	bufsend[29] = '\n';
-	USART3_SendString((unsigned char*)bufsend);
+  for (loopIndx = 0; loopIndx < 8; loopIndx++)
+  {
+    sprintf(bufDat, "%02X", CAN_Frame[loopIndx]);
+    bufsend[loopIndx * 3 + 5] = bufDat[0];
+    bufsend[loopIndx * 3 + 6] = bufDat[1];
+    bufsend[loopIndx * 3 + 7] = ' ';
+  }
+  bufsend[29] = '\n';
+  USART3_SendString((unsigned char *)bufsend);
 }
 
 uint8_t calc_crc(uint8_t *data, uint8_t crc_len)
 {
-    uint8_t idx, crc, temp1, temp2, idy;
-    crc = 0;
-    idx = 0;
-    idy = 0;
-    temp1 = 0;
-    temp2 = 0;
-    for(idx=0;idx < crc_len+1;idx++)
+  uint8_t idx, crc, temp1, temp2, idy;
+  crc = 0;
+  idx = 0;
+  idy = 0;
+  temp1 = 0;
+  temp2 = 0;
+  for (idx = 0; idx < crc_len + 1; idx++)
+  {
+    if (idx == 0)
     {
-        if(idx == 0)
-        {
-            temp1 = 0;
-        }
-        else
-        {
-            temp1 = data[crc_len-idx];
-        }
-        crc = (crc^temp1);
-        for(idy=(uint8_t)8; idy>0; idy--)
-        {
-            // Save the value before the top bit is shifted out.
-            temp2 = crc;
-            crc <<= 1;
-            if (0 != (temp2 & (uint8_t)128))
-                crc ^= 0x1D;
-        }
+      temp1 = 0;
     }
-    return crc;
+    else
+    {
+      temp1 = data[crc_len - idx];
+    }
+    crc = (crc ^ temp1);
+    for (idy = (uint8_t)8; idy > 0; idy--)
+    {
+      // Save the value before the top bit is shifted out.
+      temp2 = crc;
+      crc <<= 1;
+      if (0 != (temp2 & (uint8_t)128))
+        crc ^= 0x1D;
+    }
+  }
+  return crc;
 }
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -464,14 +473,14 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */

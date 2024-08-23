@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
+#pragma once
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -29,6 +30,7 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 #include "CAN_Communication.h"
+#include "UDS.h"
 #include <stdio.h>
 
 /* Private includes ----------------------------------------------------------*/
