@@ -28,6 +28,8 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
+#include "CAN_Communication.h"
+#include <stdio.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -36,6 +38,12 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+#define BtnA HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_4)
+#define BtnB HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_5)
+#define BtnC HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6)
+#define BtnD HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7)
+#define BtnM HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13)
+#define BtnU HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1)
 
 /* USER CODE END ET */
 
@@ -83,6 +91,8 @@ extern uint8_t CAN2_DATA_TX[8];
 extern uint8_t CAN2_DATA_RX[8];
 
 extern unsigned int TimeStamp;
+
+extern uint8_t MessageCounter;
 
 extern void USART3_SendString(char* ch);
 extern void PrintCANLog(uint16_t CANID, uint8_t *CAN_Frame);

@@ -80,6 +80,11 @@ static void MX_CAN2_Init(void);
 static void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN PFP */
 void USART3_SendString(char* ch);
+void PrintCANLog(uint16_t CANID, uint8_t *CAN_Frame);
+uint8_t calc_crc(uint8_t *data, uint8_t crc_len);
+
+void MX_CAN1_Setup();
+void MX_CAN2_Setup();
 
 /* USER CODE END PFP */
 
@@ -121,6 +126,9 @@ int main(void)
   MX_CAN2_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
+  MX_CAN1_Setup();
+  MX_CAN2_Setup();
+  __HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
 
   /* USER CODE END 2 */
 
@@ -337,6 +345,38 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void MX_CAN1_Setup()
+{
+  CAN1_sFilterConfig.FilterActivation = CAN_FILTER_ENABLE;
+  CAN1_sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
+  CAN1_sFilterConfig.SlaveStartFilterBank = 13;
+  CAN1_sFilterConfig.FilterBank = 8;
+  CAN1_sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+  CAN1_sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT;
+  CAN1_sFilterConfig.FilterIdHigh = 0x0A2 << 5;
+  CAN1_sFilterConfig.FilterIdLow = 0;
+  CAN1_sFilterConfig.FilterMaskIdHigh = 0x0A2 << 5;
+  CAN1_sFilterConfig.FilterMaskIdLow = 0;
+
+	HAL_CAN_ConfigFilter(&hcan1, &CAN1_sFilterConfig);
+	HAL_CAN_Start(&hcan1);
+	HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
+}
+
+void MX_CAN2_Setup(void)
+{
+  CAN2_sFilterConfig.FilterActivation = CAN_FILTER_ENABLE;
+  CAN2_sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
+  CAN2_sFilterConfig.SlaveStartFilterBank = 13;
+  CAN2_sFilterConfig.FilterBank = 19;
+  CAN2_sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+  CAN2_sFilterConfig.FilterScale = CAN_FILTERSCALE_16BIT;
+  CAN2_sFilterConfig.FilterIdHigh = 0x012 << 5;
+  CAN2_sFilterConfig.FilterIdLow = 0;
+  CAN2_sFilterConfig.FilterMaskIdHigh = 0x012 << 5;
+  CAN2_sFilterConfig.FilterMaskIdLow = 0;
+}
+
 void USART3_SendString(char* ch)
 {
    while(*ch != 0)
@@ -345,6 +385,7 @@ void USART3_SendString(char* ch)
       ch++;
    }
 }
+
 void PrintCANLog(uint16_t CANID, uint8_t *CAN_Frame)
 {
   uint16_t loopIndx = 0;
@@ -374,6 +415,37 @@ void PrintCANLog(uint16_t CANID, uint8_t *CAN_Frame)
 	}
 	bufsend[29] = '\n';
 	USART3_SendString((unsigned char*)bufsend);
+}
+
+uint8_t calc_crc(uint8_t *data, uint8_t crc_len)
+{
+    uint8_t idx, crc, temp1, temp2, idy;
+    crc = 0;
+    idx = 0;
+    idy = 0;
+    temp1 = 0;
+    temp2 = 0;
+    for(idx=0;idx < crc_len+1;idx++)
+    {
+        if(idx == 0)
+        {
+            temp1 = 0;
+        }
+        else
+        {
+            temp1 = data[crc_len-idx];
+        }
+        crc = (crc^temp1);
+        for(idy=(uint8_t)8; idy>0; idy--)
+        {
+            // Save the value before the top bit is shifted out.
+            temp2 = crc;
+            crc <<= 1;
+            if (0 != (temp2 & (uint8_t)128))
+                crc ^= 0x1D;
+        }
+    }
+    return crc;
 }
 /* USER CODE END 4 */
 
