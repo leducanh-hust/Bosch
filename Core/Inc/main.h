@@ -59,6 +59,32 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 
 /* USER CODE BEGIN Private defines */
+extern uint8_t uart3_receive;
+extern UART_HandleTypeDef huart3;
+
+extern CAN_HandleTypeDef hcan1;
+extern CAN_HandleTypeDef hcan2;
+extern CAN_TxHeaderTypeDef CAN1_pHeader;
+extern CAN_RxHeaderTypeDef CAN1_pHeaderRx;
+extern CAN_FilterTypeDef CAN1_sFilterConfig;
+extern CAN_TxHeaderTypeDef CAN2_pHeader;
+extern CAN_RxHeaderTypeDef CAN2_pHeaderRx;
+extern CAN_FilterTypeDef CAN2_sFilterConfig;
+extern uint32_t CAN1_pTxMailbox;
+extern uint32_t CAN2_pTxMailbox;
+
+extern uint16_t NumBytesReq;
+extern uint8_t REQ_BUFFER[4096];
+extern uint8_t  REQ_1BYTE_DATA;
+extern uint8_t CAN1_DATA_TX[8];
+extern uint8_t CAN1_DATA_RX[8];
+extern uint8_t CAN2_DATA_TX[8];
+extern uint8_t CAN2_DATA_RX[8];
+
+extern unsigned int TimeStamp;
+
+extern void USART3_SendString(char* ch);
+extern void PrintCANLog(uint16_t CANID, uint8_t *CAN_Frame);
 
 /* USER CODE END Private defines */
 

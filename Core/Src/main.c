@@ -46,7 +46,30 @@ CAN_HandleTypeDef hcan2;
 UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
+uint8_t uart3_receive;
 
+CAN_HandleTypeDef hcan1;
+CAN_HandleTypeDef hcan2;
+CAN_TxHeaderTypeDef CAN1_pHeader;
+CAN_RxHeaderTypeDef CAN1_pHeaderRx;
+CAN_FilterTypeDef CAN1_sFilterConfig;
+CAN_TxHeaderTypeDef CAN2_pHeader;
+CAN_RxHeaderTypeDef CAN2_pHeaderRx;
+CAN_FilterTypeDef CAN2_sFilterConfig;
+uint32_t CAN1_pTxMailbox;
+uint32_t CAN2_pTxMailbox;
+
+uint8_t CAN1_DATA_TX[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x00};
+uint8_t CAN1_DATA_RX[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x03,0x00};
+uint8_t CAN2_DATA_TX[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x02,0x00};
+uint8_t CAN2_DATA_RX[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x05,0x00};
+
+uint16_t NumBytesReq = 0;
+uint8_t  REQ_BUFFER  [4096];
+uint8_t  REQ_1BYTE_DATA;
+
+unsigned int TimeStamp;
+char bufsend[30] = "XXX: D1 D2 D3 D4 D5 D6 D7 D8  ";
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -56,6 +79,7 @@ static void MX_CAN1_Init(void);
 static void MX_CAN2_Init(void);
 static void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN PFP */
+void USART3_SendString(char* ch);
 
 /* USER CODE END PFP */
 
@@ -313,7 +337,44 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void USART3_SendString(char* ch)
+{
+   while(*ch != 0)
+   {
+      HAL_UART_Transmit(&huart3, ch, 1,HAL_MAX_DELAY);
+      ch++;
+   }
+}
+void PrintCANLog(uint16_t CANID, uint8_t *CAN_Frame)
+{
+  uint16_t loopIndx = 0;
+	char bufID[3] = "   ";
+	char bufDat[2] = "  ";
+	char bufTime [8]="        ";
 
+	sprintf(bufTime,"%d",TimeStamp);
+	USART3_SendString((uint8_t*)bufTime);
+	USART3_SendString((uint8_t*)" ");
+
+	sprintf(bufID,"%03X",CANID);
+	for(loopIndx = 0; loopIndx < 3; loopIndx ++)
+	{
+		bufsend[loopIndx]  = bufID[loopIndx];
+	}
+	bufsend[3] = ':';
+	bufsend[4] = ' ';
+
+
+	for(loopIndx = 0; loopIndx < 8; loopIndx ++ )
+	{
+		sprintf(bufDat,"%02X",CAN_Frame[loopIndx]);
+		bufsend[loopIndx*3 + 5] = bufDat[0];
+		bufsend[loopIndx*3 + 6] = bufDat[1];
+		bufsend[loopIndx*3 + 7] = ' ';
+	}
+	bufsend[29] = '\n';
+	USART3_SendString((unsigned char*)bufsend);
+}
 /* USER CODE END 4 */
 
 /**
