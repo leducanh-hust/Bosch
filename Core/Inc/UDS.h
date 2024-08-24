@@ -38,17 +38,32 @@ extern uint16_t NumBytesReq;
 extern uint8_t REQ_BUFFER[4096];
 extern uint8_t  REQ_1BYTE_DATA;
 
-//Functional
+
+/*BEGIN SUB FUNCTIONS*/
 extern uint8_t getSID(uint8_t data[]);
 extern uint16_t getDID(uint8_t data[]);
-extern void FormatCANFrame(uint8_t data[]);
-
-extern bool checkFormat(uint8_t data[]);
-//extern void checkDID();
-
 
 extern void CAN1_SendRequest();
-extern void SID_22_Practice();
-// extern void SID_27_Practice();
-// extern void SID_2E_Practice();
+extern void CAN2_SendResponse();
+
+//Seed and key process
+extern calculate_key_from_seed(uint8_t *input, uint8_t *output);
+extern bool cmp_key(uint8_t *key1, uint8_t *key2, uint8_t len);
+
+//check functions
+extern bool checkFormat(uint8_t data[]);
+extern bool checkDID(uint8_t data[]);
+
+/*END SUB FUNCTIONS*/
+
+extern void UART_ReadString(uint8_t *buf, uint8_t *data, uint8_t len);
+
+extern void SID22_Practice(uint8_t *data_tx, uint8_t *data_rx);
+extern void SID27_Practice(uint8_t *data_tx, uint8_t *data_rx);
+extern void SID2E_Practice(uint8_t *data_tx, uint8_t *data_rx);
+
+//Other functions
+extern void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan);
+extern void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
+
 #endif // UDS_H

@@ -86,18 +86,17 @@ extern uint32_t CAN2_pTxMailbox;
 extern uint16_t NumBytesReq;
 extern uint8_t REQ_BUFFER[4096];
 extern uint8_t  REQ_1BYTE_DATA;
-
 extern uint8_t CAN1_DATA_TX[8];
 extern uint8_t CAN1_DATA_RX[8];
 extern uint8_t CAN2_DATA_TX[8];
 extern uint8_t CAN2_DATA_RX[8];
 
+extern uint8_t Flg_Consecutive;
+
 extern unsigned int TimeStamp;
 
-extern uint8_t MessageCounter;
-
-extern void USART3_SendString(char* ch);
-extern void PrintCANLog(uint16_t CANID, uint8_t *CAN_Frame);
+extern void USART3_SendString(uint8_t *ch);
+void PrintCANLog(uint16_t CANID, uint8_t * CAN_Frame);
 
 /* USER CODE END Private defines */
 

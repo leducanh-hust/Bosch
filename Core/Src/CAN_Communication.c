@@ -2,6 +2,8 @@
 
 uint8_t MessageCounter = 0;
 
+extern void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan);
+
 void CAN_Transmit(CAN_HandleTypeDef *hcan, CAN_TxHeaderTypeDef *pHeader, uint32_t *pTxMailbox, uint8_t *data_rx, uint8_t *data_tx, uint16_t id, uint8_t x)
 {
     pHeader->StdId = id;
@@ -30,26 +32,6 @@ void CAN_Transmit(CAN_HandleTypeDef *hcan, CAN_TxHeaderTypeDef *pHeader, uint32_
     PrintCANLog(id, data_tx);
     HAL_CAN_AddTxMessage(hcan, pHeader, data_tx, pTxMailbox);
     MessageCounter = (MessageCounter + 1) & 0xF;
-}
-
-void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
-{
-    if (hcan == &hcan1)
-    {
-        HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &CAN1_pHeaderRx, CAN1_DATA_RX);
-
-        char buffer3[9] = "CAN1 RX\n";
-        USART3_SendString((unsigned char *)buffer3);
-        PrintCANLog(0x0A2, CAN1_DATA_RX);
-    }
-    else if (hcan == &hcan2)
-    {
-        HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &CAN2_pHeaderRx, CAN2_DATA_RX);
-
-        char buffer4[9] = "CAN2 RX\n";
-        USART3_SendString((unsigned char *)buffer4);
-        PrintCANLog(0x012, CAN2_DATA_RX);
-    }
 }
 
 void UserButton_Callback(void)

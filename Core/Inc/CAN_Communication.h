@@ -36,9 +36,7 @@ extern void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 
 //Functional
-extern uint8_t calc_crc(uint8_t *data, uint8_t crc_len);
-extern void CAN_Transmit(CAN_HandleTypeDef *hcan, CAN_TxHeaderTypeDef *pHeader, uint32_t *pTxMailbox, uint8_t *data_rx, uint8_t *data_tx, uint16_t id, uint8_t x);
-extern void UserButton_Callback(void);
+
 
 
 

@@ -1,4 +1,4 @@
-ARM GAS  C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s 			page 1
+ARM GAS  C:\Users\PC\AppData\Local\Temp\ccRJKlce.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -39,13 +39,15 @@ ARM GAS  C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s 			page 1
    2:Core/Src/CAN_Communication.c **** 
    3:Core/Src/CAN_Communication.c **** uint8_t MessageCounter = 0;
    4:Core/Src/CAN_Communication.c **** 
-   5:Core/Src/CAN_Communication.c **** void CAN_Transmit(CAN_HandleTypeDef *hcan, CAN_TxHeaderTypeDef *pHeader, uint32_t *pTxMailbox, uint
-   6:Core/Src/CAN_Communication.c **** {
-  34              		.loc 1 6 1 view -0
+   5:Core/Src/CAN_Communication.c **** extern void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan);
+   6:Core/Src/CAN_Communication.c **** 
+   7:Core/Src/CAN_Communication.c **** void CAN_Transmit(CAN_HandleTypeDef *hcan, CAN_TxHeaderTypeDef *pHeader, uint32_t *pTxMailbox, uint
+   8:Core/Src/CAN_Communication.c **** {
+  34              		.loc 1 8 1 view -0
   35              		.cfi_startproc
   36              		@ args = 12, pretend = 0, frame = 8
   37              		@ frame_needed = 0, uses_anonymous_args = 0
-  38              		.loc 1 6 1 is_stmt 0 view .LVU1
+  38              		.loc 1 8 1 is_stmt 0 view .LVU1
   39 0000 2DE9F047 		push	{r4, r5, r6, r7, r8, r9, r10, lr}
   40              		.cfi_def_cfa_offset 32
   41              		.cfi_offset 4, -32
@@ -56,144 +58,144 @@ ARM GAS  C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s 			page 1
   46              		.cfi_offset 9, -12
   47              		.cfi_offset 10, -8
   48              		.cfi_offset 14, -4
+ARM GAS  C:\Users\PC\AppData\Local\Temp\ccRJKlce.s 			page 2
+
+
   49 0004 82B0     		sub	sp, sp, #8
   50              		.cfi_def_cfa_offset 40
-ARM GAS  C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s 			page 2
-
-
   51 0006 0746     		mov	r7, r0
   52 0008 0D46     		mov	r5, r1
   53 000a 9046     		mov	r8, r2
   54 000c 1E46     		mov	r6, r3
   55 000e 0A9C     		ldr	r4, [sp, #40]
   56 0010 BDF82C90 		ldrh	r9, [sp, #44]
-   7:Core/Src/CAN_Communication.c ****     pHeader->StdId = id;
-  57              		.loc 1 7 5 is_stmt 1 view .LVU2
-  58              		.loc 1 7 20 is_stmt 0 view .LVU3
+   9:Core/Src/CAN_Communication.c ****     pHeader->StdId = id;
+  57              		.loc 1 9 5 is_stmt 1 view .LVU2
+  58              		.loc 1 9 20 is_stmt 0 view .LVU3
   59 0014 C1F80090 		str	r9, [r1]
-   8:Core/Src/CAN_Communication.c ****     pHeader->DLC = 8;
-  60              		.loc 1 8 5 is_stmt 1 view .LVU4
-  61              		.loc 1 8 18 is_stmt 0 view .LVU5
+  10:Core/Src/CAN_Communication.c ****     pHeader->DLC = 8;
+  60              		.loc 1 10 5 is_stmt 1 view .LVU4
+  61              		.loc 1 10 18 is_stmt 0 view .LVU5
   62 0018 0823     		movs	r3, #8
   63              	.LVL1:
-  64              		.loc 1 8 18 view .LVU6
+  64              		.loc 1 10 18 view .LVU6
   65 001a 0B61     		str	r3, [r1, #16]
-   9:Core/Src/CAN_Communication.c ****     pHeader->IDE = CAN_ID_STD;
-  66              		.loc 1 9 5 is_stmt 1 view .LVU7
-  67              		.loc 1 9 18 is_stmt 0 view .LVU8
+  11:Core/Src/CAN_Communication.c ****     pHeader->IDE = CAN_ID_STD;
+  66              		.loc 1 11 5 is_stmt 1 view .LVU7
+  67              		.loc 1 11 18 is_stmt 0 view .LVU8
   68 001c 0023     		movs	r3, #0
   69 001e 8B60     		str	r3, [r1, #8]
-  10:Core/Src/CAN_Communication.c ****     pHeader->RTR = CAN_RTR_DATA;
-  70              		.loc 1 10 5 is_stmt 1 view .LVU9
-  71              		.loc 1 10 18 is_stmt 0 view .LVU10
+  12:Core/Src/CAN_Communication.c ****     pHeader->RTR = CAN_RTR_DATA;
+  70              		.loc 1 12 5 is_stmt 1 view .LVU9
+  71              		.loc 1 12 18 is_stmt 0 view .LVU10
   72 0020 CB60     		str	r3, [r1, #12]
-  11:Core/Src/CAN_Communication.c ****     if (data_rx[7] == calc_crc(data_rx, 7))
-  73              		.loc 1 11 5 is_stmt 1 view .LVU11
-  74              		.loc 1 11 16 is_stmt 0 view .LVU12
+  13:Core/Src/CAN_Communication.c ****     if (data_rx[7] == calc_crc(data_rx, 7))
+  73              		.loc 1 13 5 is_stmt 1 view .LVU11
+  74              		.loc 1 13 16 is_stmt 0 view .LVU12
   75 0022 96F807A0 		ldrb	r10, [r6, #7]	@ zero_extendqisi2
-  76              		.loc 1 11 23 view .LVU13
+  76              		.loc 1 13 23 view .LVU13
   77 0026 0721     		movs	r1, #7
   78              	.LVL2:
-  79              		.loc 1 11 23 view .LVU14
+  79              		.loc 1 13 23 view .LVU14
   80 0028 3046     		mov	r0, r6
   81              	.LVL3:
-  82              		.loc 1 11 23 view .LVU15
+  82              		.loc 1 13 23 view .LVU15
   83 002a FFF7FEFF 		bl	calc_crc
   84              	.LVL4:
-  85              		.loc 1 11 8 discriminator 1 view .LVU16
+  85              		.loc 1 13 8 discriminator 1 view .LVU16
   86 002e 8245     		cmp	r10, r0
   87 0030 2BD0     		beq	.L7
-  12:Core/Src/CAN_Communication.c ****     {
-  13:Core/Src/CAN_Communication.c ****         data_tx[0] = 0x0A;
-  14:Core/Src/CAN_Communication.c ****         data_tx[1] = 0x02;
-  15:Core/Src/CAN_Communication.c ****         if (data_rx == CAN1_DATA_RX)
-  16:Core/Src/CAN_Communication.c ****         {
-  17:Core/Src/CAN_Communication.c ****             data_tx[2] = 0x0C;
-  18:Core/Src/CAN_Communication.c ****         }
-  19:Core/Src/CAN_Communication.c ****     }
-  20:Core/Src/CAN_Communication.c ****     else
-  21:Core/Src/CAN_Communication.c ****     {
-  22:Core/Src/CAN_Communication.c ****         data_tx[0] = 0x00;
-  88              		.loc 1 22 9 is_stmt 1 view .LVU17
-  89              		.loc 1 22 20 is_stmt 0 view .LVU18
+  14:Core/Src/CAN_Communication.c ****     {
+  15:Core/Src/CAN_Communication.c ****         data_tx[0] = 0x0A;
+  16:Core/Src/CAN_Communication.c ****         data_tx[1] = 0x02;
+  17:Core/Src/CAN_Communication.c ****         if (data_rx == CAN1_DATA_RX)
+  18:Core/Src/CAN_Communication.c ****         {
+  19:Core/Src/CAN_Communication.c ****             data_tx[2] = 0x0C;
+  20:Core/Src/CAN_Communication.c ****         }
+  21:Core/Src/CAN_Communication.c ****     }
+  22:Core/Src/CAN_Communication.c ****     else
+  23:Core/Src/CAN_Communication.c ****     {
+  24:Core/Src/CAN_Communication.c ****         data_tx[0] = 0x00;
+  88              		.loc 1 24 9 is_stmt 1 view .LVU17
+  89              		.loc 1 24 20 is_stmt 0 view .LVU18
+ARM GAS  C:\Users\PC\AppData\Local\Temp\ccRJKlce.s 			page 3
+
+
   90 0032 0023     		movs	r3, #0
   91 0034 2370     		strb	r3, [r4]
-ARM GAS  C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s 			page 3
-
-
-  23:Core/Src/CAN_Communication.c ****         data_tx[1] = 0x00;
-  92              		.loc 1 23 9 is_stmt 1 view .LVU19
-  93              		.loc 1 23 20 is_stmt 0 view .LVU20
+  25:Core/Src/CAN_Communication.c ****         data_tx[1] = 0x00;
+  92              		.loc 1 25 9 is_stmt 1 view .LVU19
+  93              		.loc 1 25 20 is_stmt 0 view .LVU20
   94 0036 6370     		strb	r3, [r4, #1]
   95              	.L3:
-  24:Core/Src/CAN_Communication.c ****     }
-  25:Core/Src/CAN_Communication.c ****     data_tx[6] = MessageCounter;
-  96              		.loc 1 25 5 is_stmt 1 view .LVU21
-  97              		.loc 1 25 16 is_stmt 0 view .LVU22
+  26:Core/Src/CAN_Communication.c ****     }
+  27:Core/Src/CAN_Communication.c ****     data_tx[6] = MessageCounter;
+  96              		.loc 1 27 5 is_stmt 1 view .LVU21
+  97              		.loc 1 27 16 is_stmt 0 view .LVU22
   98 0038 1A4B     		ldr	r3, .L9
   99 003a 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
  100 003c A371     		strb	r3, [r4, #6]
-  26:Core/Src/CAN_Communication.c ****     data_tx[7] = calc_crc(data_tx, 7) & x; // make crc wrong or not 
- 101              		.loc 1 26 5 is_stmt 1 view .LVU23
- 102              		.loc 1 26 18 is_stmt 0 view .LVU24
+  28:Core/Src/CAN_Communication.c ****     data_tx[7] = calc_crc(data_tx, 7) & x; // make crc wrong or not 
+ 101              		.loc 1 28 5 is_stmt 1 view .LVU23
+ 102              		.loc 1 28 18 is_stmt 0 view .LVU24
  103 003e 0721     		movs	r1, #7
  104 0040 2046     		mov	r0, r4
  105 0042 FFF7FEFF 		bl	calc_crc
  106              	.LVL5:
- 107              		.loc 1 26 16 discriminator 1 view .LVU25
+ 107              		.loc 1 28 16 discriminator 1 view .LVU25
  108 0046 9DF83030 		ldrb	r3, [sp, #48]	@ zero_extendqisi2
  109 004a 1840     		ands	r0, r0, r3
  110 004c E071     		strb	r0, [r4, #7]
-  27:Core/Src/CAN_Communication.c ****     char buffer[8];
- 111              		.loc 1 27 5 is_stmt 1 view .LVU26
-  28:Core/Src/CAN_Communication.c ****     sprintf(buffer, "CAN%uTX\n", (hcan == &hcan1) ? 1 : 2);
- 112              		.loc 1 28 5 view .LVU27
+  29:Core/Src/CAN_Communication.c ****     char buffer[8];
+ 111              		.loc 1 29 5 is_stmt 1 view .LVU26
+  30:Core/Src/CAN_Communication.c ****     sprintf(buffer, "CAN%uTX\n", (hcan == &hcan1) ? 1 : 2);
+ 112              		.loc 1 30 5 view .LVU27
  113 004e 164B     		ldr	r3, .L9+4
  114 0050 9F42     		cmp	r7, r3
  115 0052 24D0     		beq	.L8
- 116              		.loc 1 28 5 is_stmt 0 discriminator 2 view .LVU28
+ 116              		.loc 1 30 5 is_stmt 0 discriminator 2 view .LVU28
  117 0054 0222     		movs	r2, #2
  118              	.L4:
- 119              		.loc 1 28 5 discriminator 4 view .LVU29
+ 119              		.loc 1 30 5 discriminator 4 view .LVU29
  120 0056 1549     		ldr	r1, .L9+8
  121 0058 6846     		mov	r0, sp
  122 005a FFF7FEFF 		bl	sprintf
  123              	.LVL6:
-  29:Core/Src/CAN_Communication.c ****     USART3_SendString((unsigned char *)buffer);
- 124              		.loc 1 29 5 is_stmt 1 view .LVU30
+  31:Core/Src/CAN_Communication.c ****     USART3_SendString((unsigned char *)buffer);
+ 124              		.loc 1 31 5 is_stmt 1 view .LVU30
  125 005e 6846     		mov	r0, sp
  126 0060 FFF7FEFF 		bl	USART3_SendString
  127              	.LVL7:
-  30:Core/Src/CAN_Communication.c ****     PrintCANLog(id, data_tx);
- 128              		.loc 1 30 5 view .LVU31
+  32:Core/Src/CAN_Communication.c ****     PrintCANLog(id, data_tx);
+ 128              		.loc 1 32 5 view .LVU31
  129 0064 2146     		mov	r1, r4
  130 0066 4846     		mov	r0, r9
  131 0068 FFF7FEFF 		bl	PrintCANLog
  132              	.LVL8:
-  31:Core/Src/CAN_Communication.c ****     HAL_CAN_AddTxMessage(hcan, pHeader, data_tx, pTxMailbox);
- 133              		.loc 1 31 5 view .LVU32
+  33:Core/Src/CAN_Communication.c ****     HAL_CAN_AddTxMessage(hcan, pHeader, data_tx, pTxMailbox);
+ 133              		.loc 1 33 5 view .LVU32
  134 006c 4346     		mov	r3, r8
  135 006e 2246     		mov	r2, r4
  136 0070 2946     		mov	r1, r5
  137 0072 3846     		mov	r0, r7
+ARM GAS  C:\Users\PC\AppData\Local\Temp\ccRJKlce.s 			page 4
+
+
  138 0074 FFF7FEFF 		bl	HAL_CAN_AddTxMessage
  139              	.LVL9:
-ARM GAS  C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s 			page 4
-
-
-  32:Core/Src/CAN_Communication.c ****     MessageCounter = (MessageCounter + 1) & 0xF;
- 140              		.loc 1 32 5 view .LVU33
- 141              		.loc 1 32 43 is_stmt 0 view .LVU34
+  34:Core/Src/CAN_Communication.c ****     MessageCounter = (MessageCounter + 1) & 0xF;
+ 140              		.loc 1 34 5 view .LVU33
+ 141              		.loc 1 34 43 is_stmt 0 view .LVU34
  142 0078 0A4A     		ldr	r2, .L9
  143 007a 1378     		ldrb	r3, [r2]	@ zero_extendqisi2
- 144              		.loc 1 32 38 view .LVU35
+ 144              		.loc 1 34 38 view .LVU35
  145 007c 0133     		adds	r3, r3, #1
- 146              		.loc 1 32 43 view .LVU36
+ 146              		.loc 1 34 43 view .LVU36
  147 007e 03F00F03 		and	r3, r3, #15
- 148              		.loc 1 32 20 view .LVU37
+ 148              		.loc 1 34 20 view .LVU37
  149 0082 1370     		strb	r3, [r2]
-  33:Core/Src/CAN_Communication.c **** }
- 150              		.loc 1 33 1 view .LVU38
+  35:Core/Src/CAN_Communication.c **** }
+ 150              		.loc 1 35 1 view .LVU38
  151 0084 02B0     		add	sp, sp, #8
  152              		.cfi_remember_state
  153              		.cfi_def_cfa_offset 32
@@ -202,471 +204,311 @@ ARM GAS  C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s 			page 1
  156              	.LVL10:
  157              	.L7:
  158              		.cfi_restore_state
-  13:Core/Src/CAN_Communication.c ****         data_tx[1] = 0x02;
- 159              		.loc 1 13 9 is_stmt 1 view .LVU39
-  13:Core/Src/CAN_Communication.c ****         data_tx[1] = 0x02;
- 160              		.loc 1 13 20 is_stmt 0 view .LVU40
+  15:Core/Src/CAN_Communication.c ****         data_tx[1] = 0x02;
+ 159              		.loc 1 15 9 is_stmt 1 view .LVU39
+  15:Core/Src/CAN_Communication.c ****         data_tx[1] = 0x02;
+ 160              		.loc 1 15 20 is_stmt 0 view .LVU40
  161 008a 0A23     		movs	r3, #10
  162 008c 2370     		strb	r3, [r4]
-  14:Core/Src/CAN_Communication.c ****         if (data_rx == CAN1_DATA_RX)
- 163              		.loc 1 14 9 is_stmt 1 view .LVU41
-  14:Core/Src/CAN_Communication.c ****         if (data_rx == CAN1_DATA_RX)
- 164              		.loc 1 14 20 is_stmt 0 view .LVU42
+  16:Core/Src/CAN_Communication.c ****         if (data_rx == CAN1_DATA_RX)
+ 163              		.loc 1 16 9 is_stmt 1 view .LVU41
+  16:Core/Src/CAN_Communication.c ****         if (data_rx == CAN1_DATA_RX)
+ 164              		.loc 1 16 20 is_stmt 0 view .LVU42
  165 008e 0223     		movs	r3, #2
  166 0090 6370     		strb	r3, [r4, #1]
-  15:Core/Src/CAN_Communication.c ****         {
- 167              		.loc 1 15 9 is_stmt 1 view .LVU43
-  15:Core/Src/CAN_Communication.c ****         {
- 168              		.loc 1 15 12 is_stmt 0 view .LVU44
+  17:Core/Src/CAN_Communication.c ****         {
+ 167              		.loc 1 17 9 is_stmt 1 view .LVU43
+  17:Core/Src/CAN_Communication.c ****         {
+ 168              		.loc 1 17 12 is_stmt 0 view .LVU44
  169 0092 074B     		ldr	r3, .L9+12
  170 0094 9E42     		cmp	r6, r3
  171 0096 CFD1     		bne	.L3
-  17:Core/Src/CAN_Communication.c ****         }
- 172              		.loc 1 17 13 is_stmt 1 view .LVU45
-  17:Core/Src/CAN_Communication.c ****         }
- 173              		.loc 1 17 24 is_stmt 0 view .LVU46
+  19:Core/Src/CAN_Communication.c ****         }
+ 172              		.loc 1 19 13 is_stmt 1 view .LVU45
+  19:Core/Src/CAN_Communication.c ****         }
+ 173              		.loc 1 19 24 is_stmt 0 view .LVU46
  174 0098 0C23     		movs	r3, #12
  175 009a A370     		strb	r3, [r4, #2]
  176 009c CCE7     		b	.L3
  177              	.L8:
-  28:Core/Src/CAN_Communication.c ****     USART3_SendString((unsigned char *)buffer);
- 178              		.loc 1 28 5 discriminator 1 view .LVU47
+  30:Core/Src/CAN_Communication.c ****     USART3_SendString((unsigned char *)buffer);
+ 178              		.loc 1 30 5 discriminator 1 view .LVU47
  179 009e 0122     		movs	r2, #1
  180 00a0 D9E7     		b	.L4
  181              	.L10:
  182 00a2 00BF     		.align	2
  183              	.L9:
+ARM GAS  C:\Users\PC\AppData\Local\Temp\ccRJKlce.s 			page 5
+
+
  184 00a4 00000000 		.word	MessageCounter
  185 00a8 00000000 		.word	hcan1
-ARM GAS  C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s 			page 5
-
-
  186 00ac 00000000 		.word	.LC0
  187 00b0 00000000 		.word	CAN1_DATA_RX
  188              		.cfi_endproc
  189              	.LFE134:
- 191              		.section	.rodata.HAL_CAN_RxFifo0MsgPendingCallback.str1.4,"aMS",%progbits,1
+ 191              		.section	.rodata.UserButton_Callback.str1.4,"aMS",%progbits,1
  192              		.align	2
  193              	.LC1:
- 194 0000 43414E31 		.ascii	"CAN1 RX\012\000"
- 194      2052580A 
- 194      00
- 195 0009 000000   		.align	2
+ 194 0000 4947204F 		.ascii	"IG OFF\012\000"
+ 194      46460A00 
+ 195              		.align	2
  196              	.LC2:
- 197 000c 43414E32 		.ascii	"CAN2 RX\012\000"
- 197      2052580A 
- 197      00
- 198              		.section	.text.HAL_CAN_RxFifo0MsgPendingCallback,"ax",%progbits
+ 197 0008 2D3E2049 		.ascii	"-> IG ON\012\000"
+ 197      47204F4E 
+ 197      0A00
+ 198              		.section	.text.UserButton_Callback,"ax",%progbits
  199              		.align	1
- 200              		.global	HAL_CAN_RxFifo0MsgPendingCallback
+ 200              		.global	UserButton_Callback
  201              		.syntax unified
  202              		.thumb
  203              		.thumb_func
- 205              	HAL_CAN_RxFifo0MsgPendingCallback:
- 206              	.LVL11:
- 207              	.LFB135:
-  34:Core/Src/CAN_Communication.c **** 
-  35:Core/Src/CAN_Communication.c **** void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
-  36:Core/Src/CAN_Communication.c **** {
- 208              		.loc 1 36 1 is_stmt 1 view -0
- 209              		.cfi_startproc
- 210              		@ args = 0, pretend = 0, frame = 16
- 211              		@ frame_needed = 0, uses_anonymous_args = 0
- 212              		.loc 1 36 1 is_stmt 0 view .LVU49
- 213 0000 10B5     		push	{r4, lr}
- 214              		.cfi_def_cfa_offset 8
- 215              		.cfi_offset 4, -8
- 216              		.cfi_offset 14, -4
- 217 0002 84B0     		sub	sp, sp, #16
- 218              		.cfi_def_cfa_offset 24
-  37:Core/Src/CAN_Communication.c ****     if (hcan == &hcan1)
- 219              		.loc 1 37 5 is_stmt 1 view .LVU50
- 220              		.loc 1 37 8 is_stmt 0 view .LVU51
- 221 0004 164B     		ldr	r3, .L17
- 222 0006 9842     		cmp	r0, r3
- 223 0008 04D0     		beq	.L15
-  38:Core/Src/CAN_Communication.c ****     {
-  39:Core/Src/CAN_Communication.c ****         HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &CAN1_pHeaderRx, CAN1_DATA_RX);
-  40:Core/Src/CAN_Communication.c **** 
-  41:Core/Src/CAN_Communication.c ****         char buffer3[9] = "CAN1 RX\n";
-  42:Core/Src/CAN_Communication.c ****         USART3_SendString((unsigned char *)buffer3);
-  43:Core/Src/CAN_Communication.c ****         PrintCANLog(0x0A2, CAN1_DATA_RX);
-  44:Core/Src/CAN_Communication.c ****     }
-  45:Core/Src/CAN_Communication.c ****     else if (hcan == &hcan2)
- 224              		.loc 1 45 10 is_stmt 1 view .LVU52
- 225              		.loc 1 45 13 is_stmt 0 view .LVU53
- 226 000a 164B     		ldr	r3, .L17+4
- 227 000c 9842     		cmp	r0, r3
- 228 000e 14D0     		beq	.L16
-ARM GAS  C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s 			page 6
+ 205              	UserButton_Callback:
+ 206              	.LFB135:
+  36:Core/Src/CAN_Communication.c **** 
+  37:Core/Src/CAN_Communication.c **** void UserButton_Callback(void)
+  38:Core/Src/CAN_Communication.c **** {
+ 207              		.loc 1 38 1 is_stmt 1 view -0
+ 208              		.cfi_startproc
+ 209              		@ args = 0, pretend = 0, frame = 0
+ 210              		@ frame_needed = 0, uses_anonymous_args = 0
+ 211 0000 00B5     		push	{lr}
+ 212              		.cfi_def_cfa_offset 4
+ 213              		.cfi_offset 14, -4
+ 214 0002 85B0     		sub	sp, sp, #20
+ 215              		.cfi_def_cfa_offset 24
+  39:Core/Src/CAN_Communication.c ****     USART3_SendString((uint8_t *)"IG OFF\n");
+ 216              		.loc 1 39 5 view .LVU49
+ 217 0004 1F48     		ldr	r0, .L17
+ 218 0006 FFF7FEFF 		bl	USART3_SendString
+ 219              	.LVL11:
+  40:Core/Src/CAN_Communication.c ****     while (!BtnU)
+ 220              		.loc 1 40 5 view .LVU50
+ 221              	.L12:
+ 222              		.loc 1 40 12 discriminator 1 view .LVU51
+ 223              		.loc 1 40 13 is_stmt 0 discriminator 1 view .LVU52
+ 224 000a 0221     		movs	r1, #2
+ 225 000c 1E48     		ldr	r0, .L17+4
+ 226 000e FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 227              	.LVL12:
+ 228              		.loc 1 40 12 discriminator 1 view .LVU53
+ 229 0012 0028     		cmp	r0, #0
+ 230 0014 F9D0     		beq	.L12
+ 231 0016 1FE0     		b	.L13
+ 232              	.L14:
+  41:Core/Src/CAN_Communication.c ****         ;
+  42:Core/Src/CAN_Communication.c ****     while (BtnU)
+ARM GAS  C:\Users\PC\AppData\Local\Temp\ccRJKlce.s 			page 6
 
 
- 229              	.LVL12:
- 230              	.L11:
-  46:Core/Src/CAN_Communication.c ****     {
-  47:Core/Src/CAN_Communication.c ****         HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &CAN2_pHeaderRx, CAN2_DATA_RX);
-  48:Core/Src/CAN_Communication.c **** 
-  49:Core/Src/CAN_Communication.c ****         char buffer4[9] = "CAN2 RX\n";
-  50:Core/Src/CAN_Communication.c ****         USART3_SendString((unsigned char *)buffer4);
-  51:Core/Src/CAN_Communication.c ****         PrintCANLog(0x012, CAN2_DATA_RX);
-  52:Core/Src/CAN_Communication.c ****     }
-  53:Core/Src/CAN_Communication.c **** }
- 231              		.loc 1 53 1 view .LVU54
- 232 0010 04B0     		add	sp, sp, #16
- 233              		.cfi_remember_state
- 234              		.cfi_def_cfa_offset 8
- 235              		@ sp needed
- 236 0012 10BD     		pop	{r4, pc}
- 237              	.LVL13:
- 238              	.L15:
- 239              		.cfi_restore_state
- 240              	.LBB2:
-  39:Core/Src/CAN_Communication.c **** 
- 241              		.loc 1 39 9 is_stmt 1 view .LVU55
- 242 0014 144C     		ldr	r4, .L17+8
- 243 0016 2346     		mov	r3, r4
- 244 0018 144A     		ldr	r2, .L17+12
- 245 001a 0021     		movs	r1, #0
- 246 001c FFF7FEFF 		bl	HAL_CAN_GetRxMessage
- 247              	.LVL14:
-  41:Core/Src/CAN_Communication.c ****         USART3_SendString((unsigned char *)buffer3);
- 248              		.loc 1 41 9 view .LVU56
-  41:Core/Src/CAN_Communication.c ****         USART3_SendString((unsigned char *)buffer3);
- 249              		.loc 1 41 14 is_stmt 0 view .LVU57
- 250 0020 134A     		ldr	r2, .L17+16
- 251 0022 01AB     		add	r3, sp, #4
- 252 0024 07CA     		ldm	r2, {r0, r1, r2}
- 253 0026 03C3     		stmia	r3!, {r0, r1}
- 254 0028 1A70     		strb	r2, [r3]
-  42:Core/Src/CAN_Communication.c ****         PrintCANLog(0x0A2, CAN1_DATA_RX);
- 255              		.loc 1 42 9 is_stmt 1 view .LVU58
- 256 002a 01A8     		add	r0, sp, #4
- 257 002c FFF7FEFF 		bl	USART3_SendString
- 258              	.LVL15:
-  43:Core/Src/CAN_Communication.c ****     }
- 259              		.loc 1 43 9 view .LVU59
- 260 0030 2146     		mov	r1, r4
- 261 0032 A220     		movs	r0, #162
- 262 0034 FFF7FEFF 		bl	PrintCANLog
- 263              	.LVL16:
- 264              	.LBE2:
- 265 0038 EAE7     		b	.L11
- 266              	.LVL17:
- 267              	.L16:
- 268              	.LBB3:
-  47:Core/Src/CAN_Communication.c **** 
- 269              		.loc 1 47 9 view .LVU60
- 270 003a 0E4C     		ldr	r4, .L17+20
- 271 003c 2346     		mov	r3, r4
-ARM GAS  C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s 			page 7
+  43:Core/Src/CAN_Communication.c ****     {
+  44:Core/Src/CAN_Communication.c ****         CAN_Transmit(&hcan2, &CAN2_pHeader, &CAN2_pTxMailbox, CAN2_DATA_RX, CAN2_DATA_TX, 0xA2, 0xF
+ 233              		.loc 1 44 9 is_stmt 1 view .LVU54
+ 234 0018 FF23     		movs	r3, #255
+ 235 001a 0293     		str	r3, [sp, #8]
+ 236 001c A223     		movs	r3, #162
+ 237 001e 0193     		str	r3, [sp, #4]
+ 238 0020 1A4B     		ldr	r3, .L17+8
+ 239 0022 0093     		str	r3, [sp]
+ 240 0024 1A4B     		ldr	r3, .L17+12
+ 241 0026 1B4A     		ldr	r2, .L17+16
+ 242 0028 1B49     		ldr	r1, .L17+20
+ 243 002a 1C48     		ldr	r0, .L17+24
+ 244 002c FFF7FEFF 		bl	CAN_Transmit
+ 245              	.LVL13:
+  45:Core/Src/CAN_Communication.c ****         HAL_Delay(2000);
+ 246              		.loc 1 45 9 view .LVU55
+ 247 0030 4FF4FA60 		mov	r0, #2000
+ 248 0034 FFF7FEFF 		bl	HAL_Delay
+ 249              	.LVL14:
+  46:Core/Src/CAN_Communication.c ****         CAN_Transmit(&hcan1, &CAN1_pHeader, &CAN1_pTxMailbox, CAN1_DATA_RX, CAN1_DATA_TX, 0x12, 0);
+ 250              		.loc 1 46 9 view .LVU56
+ 251 0038 0023     		movs	r3, #0
+ 252 003a 0293     		str	r3, [sp, #8]
+ 253 003c 1223     		movs	r3, #18
+ 254 003e 0193     		str	r3, [sp, #4]
+ 255 0040 174B     		ldr	r3, .L17+28
+ 256 0042 0093     		str	r3, [sp]
+ 257 0044 174B     		ldr	r3, .L17+32
+ 258 0046 184A     		ldr	r2, .L17+36
+ 259 0048 1849     		ldr	r1, .L17+40
+ 260 004a 1948     		ldr	r0, .L17+44
+ 261 004c FFF7FEFF 		bl	CAN_Transmit
+ 262              	.LVL15:
+  47:Core/Src/CAN_Communication.c ****         HAL_Delay(1990);
+ 263              		.loc 1 47 9 view .LVU57
+ 264 0050 40F2C670 		movw	r0, #1990
+ 265 0054 FFF7FEFF 		bl	HAL_Delay
+ 266              	.LVL16:
+ 267              	.L13:
+  42:Core/Src/CAN_Communication.c ****     {
+ 268              		.loc 1 42 12 view .LVU58
+ 269 0058 0221     		movs	r1, #2
+ 270 005a 0B48     		ldr	r0, .L17+4
+ 271 005c FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 272              	.LVL17:
+  42:Core/Src/CAN_Communication.c ****     {
+ 273              		.loc 1 42 12 is_stmt 0 discriminator 1 view .LVU59
+ 274 0060 0028     		cmp	r0, #0
+ 275 0062 D9D1     		bne	.L14
+  48:Core/Src/CAN_Communication.c ****     }
+  49:Core/Src/CAN_Communication.c ****     // MX_CAN1_Setup();
+  50:Core/Src/CAN_Communication.c ****     // MX_CAN2_Setup();
+  51:Core/Src/CAN_Communication.c ****     USART3_SendString((uint8_t *)"-> IG ON\n");
+ 276              		.loc 1 51 5 is_stmt 1 view .LVU60
+ 277 0064 1348     		ldr	r0, .L17+48
+ 278 0066 FFF7FEFF 		bl	USART3_SendString
+ARM GAS  C:\Users\PC\AppData\Local\Temp\ccRJKlce.s 			page 7
 
 
- 272 003e 0E4A     		ldr	r2, .L17+24
- 273 0040 0021     		movs	r1, #0
- 274 0042 FFF7FEFF 		bl	HAL_CAN_GetRxMessage
- 275              	.LVL18:
-  49:Core/Src/CAN_Communication.c ****         USART3_SendString((unsigned char *)buffer4);
- 276              		.loc 1 49 9 view .LVU61
-  49:Core/Src/CAN_Communication.c ****         USART3_SendString((unsigned char *)buffer4);
- 277              		.loc 1 49 14 is_stmt 0 view .LVU62
- 278 0046 0D4A     		ldr	r2, .L17+28
- 279 0048 01AB     		add	r3, sp, #4
- 280 004a 07CA     		ldm	r2, {r0, r1, r2}
- 281 004c 03C3     		stmia	r3!, {r0, r1}
- 282 004e 1A70     		strb	r2, [r3]
-  50:Core/Src/CAN_Communication.c ****         PrintCANLog(0x012, CAN2_DATA_RX);
- 283              		.loc 1 50 9 is_stmt 1 view .LVU63
- 284 0050 01A8     		add	r0, sp, #4
- 285 0052 FFF7FEFF 		bl	USART3_SendString
- 286              	.LVL19:
-  51:Core/Src/CAN_Communication.c ****     }
- 287              		.loc 1 51 9 view .LVU64
- 288 0056 2146     		mov	r1, r4
- 289 0058 1220     		movs	r0, #18
- 290 005a FFF7FEFF 		bl	PrintCANLog
- 291              	.LVL20:
- 292              	.LBE3:
- 293              		.loc 1 53 1 is_stmt 0 view .LVU65
- 294 005e D7E7     		b	.L11
- 295              	.L18:
- 296              		.align	2
- 297              	.L17:
- 298 0060 00000000 		.word	hcan1
- 299 0064 00000000 		.word	hcan2
- 300 0068 00000000 		.word	CAN1_DATA_RX
- 301 006c 00000000 		.word	CAN1_pHeaderRx
- 302 0070 00000000 		.word	.LC1
- 303 0074 00000000 		.word	CAN2_DATA_RX
- 304 0078 00000000 		.word	CAN2_pHeaderRx
- 305 007c 0C000000 		.word	.LC2
- 306              		.cfi_endproc
- 307              	.LFE135:
- 309              		.section	.rodata.UserButton_Callback.str1.4,"aMS",%progbits,1
- 310              		.align	2
- 311              	.LC3:
- 312 0000 4947204F 		.ascii	"IG OFF\012\000"
- 312      46460A00 
- 313              		.align	2
- 314              	.LC4:
- 315 0008 2D3E2049 		.ascii	"-> IG ON\012\000"
- 315      47204F4E 
- 315      0A00
- 316              		.section	.text.UserButton_Callback,"ax",%progbits
- 317              		.align	1
- 318              		.global	UserButton_Callback
- 319              		.syntax unified
- 320              		.thumb
- 321              		.thumb_func
- 323              	UserButton_Callback:
-ARM GAS  C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s 			page 8
+ 279              	.LVL18:
+  52:Core/Src/CAN_Communication.c ****     while (!BtnU)
+ 280              		.loc 1 52 5 view .LVU61
+ 281              	.L15:
+ 282              		.loc 1 52 12 discriminator 1 view .LVU62
+ 283              		.loc 1 52 13 is_stmt 0 discriminator 1 view .LVU63
+ 284 006a 0221     		movs	r1, #2
+ 285 006c 0648     		ldr	r0, .L17+4
+ 286 006e FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 287              	.LVL19:
+ 288              		.loc 1 52 12 discriminator 1 view .LVU64
+ 289 0072 0028     		cmp	r0, #0
+ 290 0074 F9D0     		beq	.L15
+  53:Core/Src/CAN_Communication.c ****         ;
+  54:Core/Src/CAN_Communication.c ****     HAL_Delay(20);
+ 291              		.loc 1 54 5 is_stmt 1 view .LVU65
+ 292 0076 1420     		movs	r0, #20
+ 293 0078 FFF7FEFF 		bl	HAL_Delay
+ 294              	.LVL20:
+  55:Core/Src/CAN_Communication.c **** }
+ 295              		.loc 1 55 1 is_stmt 0 view .LVU66
+ 296 007c 05B0     		add	sp, sp, #20
+ 297              		.cfi_def_cfa_offset 4
+ 298              		@ sp needed
+ 299 007e 5DF804FB 		ldr	pc, [sp], #4
+ 300              	.L18:
+ 301 0082 00BF     		.align	2
+ 302              	.L17:
+ 303 0084 00000000 		.word	.LC1
+ 304 0088 00000240 		.word	1073872896
+ 305 008c 00000000 		.word	CAN2_DATA_TX
+ 306 0090 00000000 		.word	CAN2_DATA_RX
+ 307 0094 00000000 		.word	CAN2_pTxMailbox
+ 308 0098 00000000 		.word	CAN2_pHeader
+ 309 009c 00000000 		.word	hcan2
+ 310 00a0 00000000 		.word	CAN1_DATA_TX
+ 311 00a4 00000000 		.word	CAN1_DATA_RX
+ 312 00a8 00000000 		.word	CAN1_pTxMailbox
+ 313 00ac 00000000 		.word	CAN1_pHeader
+ 314 00b0 00000000 		.word	hcan1
+ 315 00b4 08000000 		.word	.LC2
+ 316              		.cfi_endproc
+ 317              	.LFE135:
+ 319              		.section	.text.HAL_GPIO_EXTI_Callback,"ax",%progbits
+ 320              		.align	1
+ 321              		.global	HAL_GPIO_EXTI_Callback
+ 322              		.syntax unified
+ 323              		.thumb
+ 324              		.thumb_func
+ 326              	HAL_GPIO_EXTI_Callback:
+ 327              	.LVL21:
+ 328              	.LFB136:
+  56:Core/Src/CAN_Communication.c **** 
+  57:Core/Src/CAN_Communication.c **** void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+  58:Core/Src/CAN_Communication.c **** {
+ 329              		.loc 1 58 1 is_stmt 1 view -0
+ 330              		.cfi_startproc
+ARM GAS  C:\Users\PC\AppData\Local\Temp\ccRJKlce.s 			page 8
 
 
- 324              	.LFB136:
-  54:Core/Src/CAN_Communication.c **** 
-  55:Core/Src/CAN_Communication.c **** void UserButton_Callback(void)
-  56:Core/Src/CAN_Communication.c **** {
- 325              		.loc 1 56 1 is_stmt 1 view -0
- 326              		.cfi_startproc
- 327              		@ args = 0, pretend = 0, frame = 0
- 328              		@ frame_needed = 0, uses_anonymous_args = 0
- 329 0000 00B5     		push	{lr}
- 330              		.cfi_def_cfa_offset 4
- 331              		.cfi_offset 14, -4
- 332 0002 85B0     		sub	sp, sp, #20
- 333              		.cfi_def_cfa_offset 24
-  57:Core/Src/CAN_Communication.c ****     USART3_SendString((uint8_t *)"IG OFF\n");
- 334              		.loc 1 57 5 view .LVU67
- 335 0004 1F48     		ldr	r0, .L25
- 336 0006 FFF7FEFF 		bl	USART3_SendString
- 337              	.LVL21:
-  58:Core/Src/CAN_Communication.c ****     while (!BtnU)
- 338              		.loc 1 58 5 view .LVU68
- 339              	.L20:
- 340              		.loc 1 58 12 discriminator 1 view .LVU69
- 341              		.loc 1 58 13 is_stmt 0 discriminator 1 view .LVU70
- 342 000a 0221     		movs	r1, #2
- 343 000c 1E48     		ldr	r0, .L25+4
- 344 000e FFF7FEFF 		bl	HAL_GPIO_ReadPin
- 345              	.LVL22:
- 346              		.loc 1 58 12 discriminator 1 view .LVU71
- 347 0012 0028     		cmp	r0, #0
- 348 0014 F9D0     		beq	.L20
- 349 0016 1FE0     		b	.L21
- 350              	.L22:
-  59:Core/Src/CAN_Communication.c ****         ;
-  60:Core/Src/CAN_Communication.c ****     while (BtnU)
-  61:Core/Src/CAN_Communication.c ****     {
-  62:Core/Src/CAN_Communication.c ****         CAN_Transmit(&hcan2, &CAN2_pHeader, &CAN2_pTxMailbox, CAN2_DATA_RX, CAN2_DATA_TX, 0xA2, 0xF
- 351              		.loc 1 62 9 is_stmt 1 view .LVU72
- 352 0018 FF23     		movs	r3, #255
- 353 001a 0293     		str	r3, [sp, #8]
- 354 001c A223     		movs	r3, #162
- 355 001e 0193     		str	r3, [sp, #4]
- 356 0020 1A4B     		ldr	r3, .L25+8
- 357 0022 0093     		str	r3, [sp]
- 358 0024 1A4B     		ldr	r3, .L25+12
- 359 0026 1B4A     		ldr	r2, .L25+16
- 360 0028 1B49     		ldr	r1, .L25+20
- 361 002a 1C48     		ldr	r0, .L25+24
- 362 002c FFF7FEFF 		bl	CAN_Transmit
- 363              	.LVL23:
-  63:Core/Src/CAN_Communication.c ****         HAL_Delay(2000);
- 364              		.loc 1 63 9 view .LVU73
- 365 0030 4FF4FA60 		mov	r0, #2000
- 366 0034 FFF7FEFF 		bl	HAL_Delay
- 367              	.LVL24:
-  64:Core/Src/CAN_Communication.c ****         CAN_Transmit(&hcan1, &CAN1_pHeader, &CAN1_pTxMailbox, CAN1_DATA_RX, CAN1_DATA_TX, 0x12, 0);
- 368              		.loc 1 64 9 view .LVU74
- 369 0038 0023     		movs	r3, #0
-ARM GAS  C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s 			page 9
-
-
- 370 003a 0293     		str	r3, [sp, #8]
- 371 003c 1223     		movs	r3, #18
- 372 003e 0193     		str	r3, [sp, #4]
- 373 0040 174B     		ldr	r3, .L25+28
- 374 0042 0093     		str	r3, [sp]
- 375 0044 174B     		ldr	r3, .L25+32
- 376 0046 184A     		ldr	r2, .L25+36
- 377 0048 1849     		ldr	r1, .L25+40
- 378 004a 1948     		ldr	r0, .L25+44
- 379 004c FFF7FEFF 		bl	CAN_Transmit
- 380              	.LVL25:
-  65:Core/Src/CAN_Communication.c ****         HAL_Delay(1990);
- 381              		.loc 1 65 9 view .LVU75
- 382 0050 40F2C670 		movw	r0, #1990
- 383 0054 FFF7FEFF 		bl	HAL_Delay
- 384              	.LVL26:
- 385              	.L21:
+ 331              		@ args = 0, pretend = 0, frame = 0
+ 332              		@ frame_needed = 0, uses_anonymous_args = 0
+  59:Core/Src/CAN_Communication.c ****     if (GPIO_Pin == GPIO_PIN_1)
+ 333              		.loc 1 59 5 view .LVU68
+ 334              		.loc 1 59 8 is_stmt 0 view .LVU69
+ 335 0000 0228     		cmp	r0, #2
+ 336 0002 00D0     		beq	.L25
+ 337 0004 7047     		bx	lr
+ 338              	.L25:
+  58:Core/Src/CAN_Communication.c ****     if (GPIO_Pin == GPIO_PIN_1)
+ 339              		.loc 1 58 1 view .LVU70
+ 340 0006 08B5     		push	{r3, lr}
+ 341              		.cfi_def_cfa_offset 8
+ 342              		.cfi_offset 3, -8
+ 343              		.cfi_offset 14, -4
   60:Core/Src/CAN_Communication.c ****     {
- 386              		.loc 1 60 12 view .LVU76
- 387 0058 0221     		movs	r1, #2
- 388 005a 0B48     		ldr	r0, .L25+4
- 389 005c FFF7FEFF 		bl	HAL_GPIO_ReadPin
- 390              	.LVL27:
-  60:Core/Src/CAN_Communication.c ****     {
- 391              		.loc 1 60 12 is_stmt 0 discriminator 1 view .LVU77
- 392 0060 0028     		cmp	r0, #0
- 393 0062 D9D1     		bne	.L22
-  66:Core/Src/CAN_Communication.c ****     }
-  67:Core/Src/CAN_Communication.c ****     // MX_CAN1_Setup();
-  68:Core/Src/CAN_Communication.c ****     // MX_CAN2_Setup();
-  69:Core/Src/CAN_Communication.c ****     USART3_SendString((uint8_t *)"-> IG ON\n");
- 394              		.loc 1 69 5 is_stmt 1 view .LVU78
- 395 0064 1348     		ldr	r0, .L25+48
- 396 0066 FFF7FEFF 		bl	USART3_SendString
- 397              	.LVL28:
-  70:Core/Src/CAN_Communication.c ****     while (!BtnU)
- 398              		.loc 1 70 5 view .LVU79
- 399              	.L23:
- 400              		.loc 1 70 12 discriminator 1 view .LVU80
- 401              		.loc 1 70 13 is_stmt 0 discriminator 1 view .LVU81
- 402 006a 0221     		movs	r1, #2
- 403 006c 0648     		ldr	r0, .L25+4
- 404 006e FFF7FEFF 		bl	HAL_GPIO_ReadPin
- 405              	.LVL29:
- 406              		.loc 1 70 12 discriminator 1 view .LVU82
- 407 0072 0028     		cmp	r0, #0
- 408 0074 F9D0     		beq	.L23
-  71:Core/Src/CAN_Communication.c ****         ;
-  72:Core/Src/CAN_Communication.c ****     HAL_Delay(20);
- 409              		.loc 1 72 5 is_stmt 1 view .LVU83
- 410 0076 1420     		movs	r0, #20
- 411 0078 FFF7FEFF 		bl	HAL_Delay
- 412              	.LVL30:
-  73:Core/Src/CAN_Communication.c **** }
- 413              		.loc 1 73 1 is_stmt 0 view .LVU84
- 414 007c 05B0     		add	sp, sp, #20
- 415              		.cfi_def_cfa_offset 4
-ARM GAS  C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s 			page 10
+  61:Core/Src/CAN_Communication.c ****         HAL_Delay(20);
+ 344              		.loc 1 61 9 is_stmt 1 view .LVU71
+ 345 0008 1420     		movs	r0, #20
+ 346              	.LVL22:
+ 347              		.loc 1 61 9 is_stmt 0 view .LVU72
+ 348 000a FFF7FEFF 		bl	HAL_Delay
+ 349              	.LVL23:
+  62:Core/Src/CAN_Communication.c ****         if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1) == GPIO_PIN_RESET)
+ 350              		.loc 1 62 9 is_stmt 1 view .LVU73
+ 351              		.loc 1 62 13 is_stmt 0 view .LVU74
+ 352 000e 0221     		movs	r1, #2
+ 353 0010 0348     		ldr	r0, .L27
+ 354 0012 FFF7FEFF 		bl	HAL_GPIO_ReadPin
+ 355              	.LVL24:
+ 356              		.loc 1 62 12 discriminator 1 view .LVU75
+ 357 0016 00B1     		cbz	r0, .L26
+ 358              	.L19:
+  63:Core/Src/CAN_Communication.c ****             UserButton_Callback();
+  64:Core/Src/CAN_Communication.c ****     }
+  65:Core/Src/CAN_Communication.c **** }...
+ 359              		.loc 1 65 1 view .LVU76
+ 360 0018 08BD     		pop	{r3, pc}
+ 361              	.L26:
+  63:Core/Src/CAN_Communication.c ****             UserButton_Callback();
+ 362              		.loc 1 63 13 is_stmt 1 view .LVU77
+ 363 001a FFF7FEFF 		bl	UserButton_Callback
+ 364              	.LVL25:
+ 365              		.loc 1 65 1 is_stmt 0 view .LVU78
+ 366 001e FBE7     		b	.L19
+ 367              	.L28:
+ 368              		.align	2
+ 369              	.L27:
+ 370 0020 00000240 		.word	1073872896
+ 371              		.cfi_endproc
+ 372              	.LFE136:
+ 374              		.global	MessageCounter
+ 375              		.section	.bss.MessageCounter,"aw",%nobits
+ 378              	MessageCounter:
+ 379 0000 00       		.space	1
+ 380              		.text
+ 381              	.Letext0:
+ARM GAS  C:\Users\PC\AppData\Local\Temp\ccRJKlce.s 			page 9
 
 
- 416              		@ sp needed
- 417 007e 5DF804FB 		ldr	pc, [sp], #4
- 418              	.L26:
- 419 0082 00BF     		.align	2
- 420              	.L25:
- 421 0084 00000000 		.word	.LC3
- 422 0088 00000240 		.word	1073872896
- 423 008c 00000000 		.word	CAN2_DATA_TX
- 424 0090 00000000 		.word	CAN2_DATA_RX
- 425 0094 00000000 		.word	CAN2_pTxMailbox
- 426 0098 00000000 		.word	CAN2_pHeader
- 427 009c 00000000 		.word	hcan2
- 428 00a0 00000000 		.word	CAN1_DATA_TX
- 429 00a4 00000000 		.word	CAN1_DATA_RX
- 430 00a8 00000000 		.word	CAN1_pTxMailbox
- 431 00ac 00000000 		.word	CAN1_pHeader
- 432 00b0 00000000 		.word	hcan1
- 433 00b4 08000000 		.word	.LC4
- 434              		.cfi_endproc
- 435              	.LFE136:
- 437              		.section	.text.HAL_GPIO_EXTI_Callback,"ax",%progbits
- 438              		.align	1
- 439              		.global	HAL_GPIO_EXTI_Callback
- 440              		.syntax unified
- 441              		.thumb
- 442              		.thumb_func
- 444              	HAL_GPIO_EXTI_Callback:
- 445              	.LVL31:
- 446              	.LFB137:
-  74:Core/Src/CAN_Communication.c **** 
-  75:Core/Src/CAN_Communication.c **** void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-  76:Core/Src/CAN_Communication.c **** {
- 447              		.loc 1 76 1 is_stmt 1 view -0
- 448              		.cfi_startproc
- 449              		@ args = 0, pretend = 0, frame = 0
- 450              		@ frame_needed = 0, uses_anonymous_args = 0
-  77:Core/Src/CAN_Communication.c ****     if (GPIO_Pin == GPIO_PIN_1)
- 451              		.loc 1 77 5 view .LVU86
- 452              		.loc 1 77 8 is_stmt 0 view .LVU87
- 453 0000 0228     		cmp	r0, #2
- 454 0002 00D0     		beq	.L33
- 455 0004 7047     		bx	lr
- 456              	.L33:
-  76:Core/Src/CAN_Communication.c ****     if (GPIO_Pin == GPIO_PIN_1)
- 457              		.loc 1 76 1 view .LVU88
- 458 0006 08B5     		push	{r3, lr}
- 459              		.cfi_def_cfa_offset 8
- 460              		.cfi_offset 3, -8
- 461              		.cfi_offset 14, -4
-  78:Core/Src/CAN_Communication.c ****     {
-  79:Core/Src/CAN_Communication.c ****         HAL_Delay(20);
- 462              		.loc 1 79 9 is_stmt 1 view .LVU89
- 463 0008 1420     		movs	r0, #20
- 464              	.LVL32:
- 465              		.loc 1 79 9 is_stmt 0 view .LVU90
- 466 000a FFF7FEFF 		bl	HAL_Delay
- 467              	.LVL33:
-ARM GAS  C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s 			page 11
-
-
-  80:Core/Src/CAN_Communication.c ****         if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_1) == GPIO_PIN_RESET)
- 468              		.loc 1 80 9 is_stmt 1 view .LVU91
- 469              		.loc 1 80 13 is_stmt 0 view .LVU92
- 470 000e 0221     		movs	r1, #2
- 471 0010 0348     		ldr	r0, .L35
- 472 0012 FFF7FEFF 		bl	HAL_GPIO_ReadPin
- 473              	.LVL34:
- 474              		.loc 1 80 12 discriminator 1 view .LVU93
- 475 0016 00B1     		cbz	r0, .L34
- 476              	.L27:
-  81:Core/Src/CAN_Communication.c ****             UserButton_Callback();
-  82:Core/Src/CAN_Communication.c ****     }
-  83:Core/Src/CAN_Communication.c **** }...
- 477              		.loc 1 83 1 view .LVU94
- 478 0018 08BD     		pop	{r3, pc}
- 479              	.L34:
-  81:Core/Src/CAN_Communication.c ****             UserButton_Callback();
- 480              		.loc 1 81 13 is_stmt 1 view .LVU95
- 481 001a FFF7FEFF 		bl	UserButton_Callback
- 482              	.LVL35:
- 483              		.loc 1 83 1 is_stmt 0 view .LVU96
- 484 001e FBE7     		b	.L27
- 485              	.L36:
- 486              		.align	2
- 487              	.L35:
- 488 0020 00000240 		.word	1073872896
- 489              		.cfi_endproc
- 490              	.LFE137:
- 492              		.global	MessageCounter
- 493              		.section	.bss.MessageCounter,"aw",%nobits
- 496              	MessageCounter:
- 497 0000 00       		.space	1
- 498              		.text
- 499              	.Letext0:
- 500              		.file 2 "C:/Users/PC/AppData/Roaming/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack-dev-tools
- 501              		.file 3 "C:/Users/PC/AppData/Roaming/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack-dev-tools
- 502              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f405xx.h"
- 503              		.file 5 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"
- 504              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
- 505              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
- 506              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_can.h"
- 507              		.file 9 "Core/Inc/CAN_Communication.h"
- 508              		.file 10 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
- 509              		.file 11 "<built-in>"
-ARM GAS  C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s 			page 12
+ 382              		.file 2 "C:/Users/PC/AppData/Roaming/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack-dev-tools
+ 383              		.file 3 "C:/Users/PC/AppData/Roaming/Code/User/globalStorage/bmd.stm32-for-vscode/@xpack-dev-tools
+ 384              		.file 4 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f405xx.h"
+ 385              		.file 5 "Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h"
+ 386              		.file 6 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h"
+ 387              		.file 7 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h"
+ 388              		.file 8 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_can.h"
+ 389              		.file 9 "Core/Inc/CAN_Communication.h"
+ 390              		.file 10 "Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"
+ 391              		.file 11 "<built-in>"
+ARM GAS  C:\Users\PC\AppData\Local\Temp\ccRJKlce.s 			page 10
 
 
 DEFINED SYMBOLS
                             *ABS*:00000000 CAN_Communication.c
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:21     .rodata.CAN_Transmit.str1.4:00000000 $d
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:25     .text.CAN_Transmit:00000000 $t
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:31     .text.CAN_Transmit:00000000 CAN_Transmit
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:184    .text.CAN_Transmit:000000a4 $d
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:496    .bss.MessageCounter:00000000 MessageCounter
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:192    .rodata.HAL_CAN_RxFifo0MsgPendingCallback.str1.4:00000000 $d
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:199    .text.HAL_CAN_RxFifo0MsgPendingCallback:00000000 $t
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:205    .text.HAL_CAN_RxFifo0MsgPendingCallback:00000000 HAL_CAN_RxFifo0MsgPendingCallback
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:298    .text.HAL_CAN_RxFifo0MsgPendingCallback:00000060 $d
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:310    .rodata.UserButton_Callback.str1.4:00000000 $d
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:317    .text.UserButton_Callback:00000000 $t
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:323    .text.UserButton_Callback:00000000 UserButton_Callback
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:421    .text.UserButton_Callback:00000084 $d
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:438    .text.HAL_GPIO_EXTI_Callback:00000000 $t
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:444    .text.HAL_GPIO_EXTI_Callback:00000000 HAL_GPIO_EXTI_Callback
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:488    .text.HAL_GPIO_EXTI_Callback:00000020 $d
-C:\Users\PC\AppData\Local\Temp\ccrYVv7E.s:497    .bss.MessageCounter:00000000 $d
+C:\Users\PC\AppData\Local\Temp\ccRJKlce.s:21     .rodata.CAN_Transmit.str1.4:00000000 $d
+C:\Users\PC\AppData\Local\Temp\ccRJKlce.s:25     .text.CAN_Transmit:00000000 $t
+C:\Users\PC\AppData\Local\Temp\ccRJKlce.s:31     .text.CAN_Transmit:00000000 CAN_Transmit
+C:\Users\PC\AppData\Local\Temp\ccRJKlce.s:184    .text.CAN_Transmit:000000a4 $d
+C:\Users\PC\AppData\Local\Temp\ccRJKlce.s:378    .bss.MessageCounter:00000000 MessageCounter
+C:\Users\PC\AppData\Local\Temp\ccRJKlce.s:192    .rodata.UserButton_Callback.str1.4:00000000 $d
+C:\Users\PC\AppData\Local\Temp\ccRJKlce.s:199    .text.UserButton_Callback:00000000 $t
+C:\Users\PC\AppData\Local\Temp\ccRJKlce.s:205    .text.UserButton_Callback:00000000 UserButton_Callback
+C:\Users\PC\AppData\Local\Temp\ccRJKlce.s:303    .text.UserButton_Callback:00000084 $d
+C:\Users\PC\AppData\Local\Temp\ccRJKlce.s:320    .text.HAL_GPIO_EXTI_Callback:00000000 $t
+C:\Users\PC\AppData\Local\Temp\ccRJKlce.s:326    .text.HAL_GPIO_EXTI_Callback:00000000 HAL_GPIO_EXTI_Callback
+C:\Users\PC\AppData\Local\Temp\ccRJKlce.s:370    .text.HAL_GPIO_EXTI_Callback:00000020 $d
+C:\Users\PC\AppData\Local\Temp\ccRJKlce.s:379    .bss.MessageCounter:00000000 $d
 
 UNDEFINED SYMBOLS
 calc_crc
@@ -676,16 +518,13 @@ PrintCANLog
 HAL_CAN_AddTxMessage
 hcan1
 CAN1_DATA_RX
-HAL_CAN_GetRxMessage
-hcan2
-CAN1_pHeaderRx
-CAN2_DATA_RX
-CAN2_pHeaderRx
 HAL_GPIO_ReadPin
 HAL_Delay
 CAN2_DATA_TX
+CAN2_DATA_RX
 CAN2_pTxMailbox
 CAN2_pHeader
+hcan2
 CAN1_DATA_TX
 CAN1_pTxMailbox
 CAN1_pHeader
