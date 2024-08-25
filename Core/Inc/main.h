@@ -19,7 +19,6 @@
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#pragma once
 #ifndef __MAIN_H
 #define __MAIN_H
 
@@ -29,10 +28,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
-#include "CAN_Communication.h"
 #include "UDS.h"
-#include <stdio.h>
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -98,6 +94,17 @@ extern unsigned int TimeStamp;
 extern void USART3_SendString(uint8_t *ch);
 void PrintCANLog(uint16_t CANID, uint8_t * CAN_Frame);
 
+extern void MX_CAN1_Setup();
+extern void MX_CAN2_Setup();
+extern void CAN1_Config();
+extern void CAN2_Config();
+
+extern uint8_t flag_SeedProvided;
+extern uint8_t flag_SecurityUnlocked ;
+
+extern uint16_t newStdId ;
+
+extern void UART_ReadString(uint8_t *buf, uint8_t *data, uint8_t len);
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

@@ -18,7 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-
+#include "UDS.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -43,13 +43,13 @@
 CAN_HandleTypeDef hcan1;
 CAN_HandleTypeDef hcan2;
 
+TIM_HandleTypeDef htim2;
+
 UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
 uint8_t uart3_receive;
 
-CAN_HandleTypeDef hcan1;
-CAN_HandleTypeDef hcan2;
 CAN_TxHeaderTypeDef CAN1_pHeader;
 CAN_RxHeaderTypeDef CAN1_pHeaderRx;
 CAN_FilterTypeDef CAN1_sFilterConfig;
@@ -60,24 +60,23 @@ uint32_t CAN1_pTxMailbox;
 uint32_t CAN2_pTxMailbox;
 
 uint16_t NumBytesReq = 0;
-uint8_t  REQ_BUFFER  [4096];
-uint8_t  REQ_1BYTE_DATA;
+uint8_t REQ_BUFFER[4096];
+uint8_t REQ_1BYTE_DATA;
 
-uint8_t CAN1_DATA_TX[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
-uint8_t CAN1_DATA_RX[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
-uint8_t CAN2_DATA_TX[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
-uint8_t CAN2_DATA_RX[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+uint8_t CAN1_DATA_TX[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+uint8_t CAN1_DATA_RX[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+uint8_t CAN2_DATA_TX[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+uint8_t CAN2_DATA_RX[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-uint16_t Num_Consecutive_Tester;
-uint8_t  Flg_Consecutive = 0;
-volatile uint8_t flag_RxFifo0 = 0;
+// uint16_t Num_Consecutive_Tester;
+// uint8_t Flg_Consecutive = 0;
+volatile uint8_t flag_CAN1_Received = 0;
+volatile uint8_t flag_CAN2_Received = 0;
 
 unsigned int TimeStamp;
 // maximum characters send out via UART is 30
-char bufsend[30]="XXX: D1 D2 D3 D4 D5 D6 D7 D8  ";
+char bufsend[30] = "XXX: D1 D2 D3 D4 D5 D6 D7 D8  ";
 
-uint8_t MessageCounter = 0;
-uint8_t flag = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -86,28 +85,19 @@ static void MX_GPIO_Init(void);
 static void MX_CAN1_Init(void);
 static void MX_CAN2_Init(void);
 static void MX_USART3_UART_Init(void);
-
+static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
 
-//CAN setup and config functions
+// CAN setup and config functions
 void MX_CAN1_Setup();
 void MX_CAN2_Setup();
 void CAN1_Config();
 void CAN2_Config();
 
-//UART send and display functions
-void USART3_SendString(char *ch);
+// UART send and display functions
 void PrintCANLog(uint16_t CANID, uint8_t *CAN_Frame);
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-  REQ_BUFFER[NumBytesReq] = REQ_1BYTE_DATA;
-  NumBytesReq++;
-  // REQ_BUFFER[7] = NumBytesReq;
-}
-
-
-
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -147,31 +137,78 @@ int main(void)
   MX_CAN1_Init();
   MX_CAN2_Init();
   MX_USART3_UART_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  CAN1_Config();
-  CAN2_Config();
   MX_CAN1_Setup();
   MX_CAN2_Setup();
+  CAN1_Config();
+  CAN2_Config();
+
   __HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
+
+  while (1)
+  {
+    if (NumBytesReq != 0)
+    {
+      HAL_Delay(100);
+      UART_ReadString(REQ_BUFFER, CAN1_DATA_TX, NumBytesReq);
+      CAN1_Send();
+      HAL_Delay(100);
+      NumBytesReq = 0;
+    }
+
+    if (flag_CAN2_Received)
+    {
+      switch (REQ_BUFFER[0])
+      {
+      case 0x27:
+        SID27_Practice(CAN2_DATA_TX, CAN2_DATA_RX);
+        break;
+      case 0x22:
+        SID22_Practice(CAN2_DATA_TX, CAN2_DATA_RX);
+        break;
+      case 0x2E:
+        SID2E_Practice(CAN2_DATA_TX, CAN2_DATA_RX);
+        break;
+      default:
+        USART3_SendString((uint8_t *)"Service not support\n");
+        break;
+      }
+      flag_CAN2_Received = 0;
+    }
+    if (flag_CAN1_Received)
+    {
+      USART3_SendString((uint8_t *)"Response: ");
+      PrintCANLog(CAN1_pHeaderRx.StdId, CAN1_DATA_RX);
+      flag_CAN1_Received = 0;
+    }
+    if (!BtnU) /*IG OFF->ON stimulation*/
+    {
+      HAL_Delay(20);
+      USART3_SendString((uint8_t *)"IG OFF ");
+      while (!BtnU)
+        ;
+      CAN1_pHeader.StdId = newStdId;
+      CAN2_Config();
+      MX_CAN1_Setup();
+      MX_CAN2_Setup();
+      USART3_SendString((uint8_t *)"-> IG ON \n");
+      HAL_Delay(20);
+    }
+  }
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    /* USER CODE END WHILE */
-    CAN1_SendRequest();
-    HAL_Delay(2000);
-    PrintCANLog(0x712, CAN1_DATA_RX);
-    SID_22_Practice();
-    HAL_Delay(2000);
+  // while (1)
+  // {
+  /* USER CODE END WHILE */
 
-    memset(&REQ_BUFFER, 0x00, 4096);
-    NumBytesReq = 0;
-
-    /* USER CODE BEGIN 3 */
-  }
+  /* USER CODE BEGIN 3 */
+  // }
+  memset(REQ_BUFFER, 0, sizeof(REQ_BUFFER));
+  NumBytesReq = 0;
   /* USER CODE END 3 */
 }
 
@@ -218,53 +255,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-}
-
-/**
- * @brief GPIO Initialization Function
- * @param None
- * @retval None
- */
-static void MX_GPIO_Init(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-  /* USER CODE BEGIN MX_GPIO_Init_1 */
-  /* USER CODE END MX_GPIO_Init_1 */
-
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOH_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-
-  /*Configure GPIO pins : PC13 PC4 PC5 PC6
-                           PC7 */
-  GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PA0 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PA1 */
-  GPIO_InitStruct.Pin = GPIO_PIN_1;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
-  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
-
-  HAL_NVIC_SetPriority(EXTI1_IRQn, 2, 0);
-  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
-
-  /* USER CODE BEGIN MX_GPIO_Init_2 */
-  /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /**
@@ -339,6 +329,49 @@ static void MX_CAN2_Init(void)
   /* USER CODE END CAN2_Init 2 */
 }
 
+/**
+ * @brief TIM2 Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_TIM2_Init(void)
+{
+
+  /* USER CODE BEGIN TIM2_Init 0 */
+
+  /* USER CODE END TIM2_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM2_Init 1 */
+
+  /* USER CODE END TIM2_Init 1 */
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 7999;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 49999;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM2_Init 2 */
+
+  /* USER CODE END TIM2_Init 2 */
+}
 
 /**
  * @brief USART3 Initialization Function
@@ -372,22 +405,52 @@ static void MX_USART3_UART_Init(void)
   /* USER CODE END USART3_Init 2 */
 }
 
+/**
+ * @brief GPIO Initialization Function
+ * @param None
+ * @retval None
+ */
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  /* USER CODE BEGIN MX_GPIO_Init_1 */
+  /* USER CODE END MX_GPIO_Init_1 */
 
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /*Configure GPIO pins : PC13 PC4 PC5 PC6
+                           PC7 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13 | GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA0 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+  /* USER CODE BEGIN MX_GPIO_Init_2 */
+  /* USER CODE END MX_GPIO_Init_2 */
+}
 
 /* USER CODE BEGIN 4 */
-void MX_CAN1_Setup()
-{
-  HAL_CAN_ConfigFilter(&hcan1, &CAN1_sFilterConfig);
-  HAL_CAN_Start(&hcan1);
-  HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
-}
 
-void MX_CAN2_Setup()
-{
-  HAL_CAN_ConfigFilter(&hcan2, &CAN2_sFilterConfig);
-  HAL_CAN_Start(&hcan2);
-  HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);
-}
 
 void CAN1_Config()
 {
@@ -411,7 +474,7 @@ void CAN1_Config()
 void CAN2_Config()
 {
   CAN2_pHeader.IDE = CAN_ID_STD;
-  CAN2_pHeader.StdId = 0x7FF;
+  CAN2_pHeader.StdId = 0x0A2;
   CAN2_pHeader.RTR = CAN_RTR_DATA;
   CAN2_pHeader.DLC = 8;
   CAN2_sFilterConfig.FilterActivation = CAN_FILTER_ENABLE;
@@ -423,35 +486,23 @@ void CAN2_Config()
   CAN2_sFilterConfig.FilterMaskIdLow = 0;
   CAN2_sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
   CAN2_sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-  CAN2_sFilterConfig.SlaveStartFilterBank = 20;
   HAL_CAN_ConfigFilter(&hcan2, &CAN2_sFilterConfig);
 }
 
-void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
+void MX_CAN1_Setup()
 {
-  if(hcan == &hcan1)
-  {
-    if(HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &CAN1_pHeaderRx, CAN1_DATA_RX) != HAL_OK)
-    {
-      Error_Handler();
-    }
-    flag_RxFifo0 = 1;
-    return;
-  }
-
-  if(hcan == &hcan2)
-  {
-    if(HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &CAN2_pHeaderRx, CAN2_DATA_RX) != HAL_OK)
-    {
-      Error_Handler();
-    }
-    flag_RxFifo0 = 2;
-    return;
-  }
+  HAL_CAN_ConfigFilter(&hcan1, &CAN1_sFilterConfig);
+  HAL_CAN_Start(&hcan1);
+  HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING);
+}
+void MX_CAN2_Setup()
+{
+  HAL_CAN_ConfigFilter(&hcan2, &CAN2_sFilterConfig);
+  HAL_CAN_Start(&hcan2);
+  HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING);
 }
 
-
-void USART3_SendString(char *ch)
+void USART3_SendString(uint8_t *ch)
 {
   while (*ch != 0)
   {
@@ -459,7 +510,6 @@ void USART3_SendString(char *ch)
     ch++;
   }
 }
-
 void PrintCANLog(uint16_t CANID, uint8_t *CAN_Frame)
 {
   uint16_t loopIndx = 0;
@@ -489,46 +539,36 @@ void PrintCANLog(uint16_t CANID, uint8_t *CAN_Frame)
   bufsend[29] = '\n';
   USART3_SendString((unsigned char *)bufsend);
 }
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-  REQ_BUFFER[NumBytesReq] = REQ_1BYTE_DATA;
-  NumBytesReq++;
-  // REQ_BUFFER[7] = NumBytesReq;
-}
-
-uint8_t calc_crc(uint8_t *data, uint8_t crc_len)
-{
-  uint8_t idx, crc, temp1, temp2, idy;
-  crc = 0;
-  idx = 0;
-  idy = 0;
-  temp1 = 0;
-  temp2 = 0;
-  for (idx = 0; idx < crc_len + 1; idx++)
-  {
-    if (idx == 0)
-    {
-      temp1 = 0;
-    }
-    else
-    {
-      temp1 = data[crc_len - idx];
-    }
-    crc = (crc ^ temp1);
-    for (idy = (uint8_t)8; idy > 0; idy--)
-    {
-      // Save the value before the top bit is shifted out.
-      temp2 = crc;
-      crc <<= 1;
-      if (0 != (temp2 & (uint8_t)128))
-        crc ^= 0x1D;
-    }
-  }
-  return crc;
-}
 /* USER CODE END 4 */
 
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
+	HAL_StatusTypeDef ret;
+	if (hcan == &hcan1) {
+		ret = HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &CAN1_pHeaderRx,
+				CAN1_DATA_RX);
+		if (ret != HAL_OK) {
+			Error_Handler();
+		}
+		flag_CAN1_Received=1;
+		return;
+	}
+	if (hcan == &hcan2) {
+		ret = HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &CAN2_pHeaderRx,
+				CAN2_DATA_RX);
+		if (ret != HAL_OK) {
+			Error_Handler();
+		}
+		flag_CAN2_Received=1;
+		return;
+	}
+}
+
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+	REQ_BUFFER[NumBytesReq] = REQ_1BYTE_DATA;
+	NumBytesReq++;
+	//REQ_BUFFER[7] = NumBytesReq;
+}
 /**
  * @brief  This function is executed in case of error occurrence.
  * @retval None
@@ -538,13 +578,12 @@ void Error_Handler(void)
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
+  USART3_SendString((uint8_t *)"Error");
   while (1)
   {
   }
   /* USER CODE END Error_Handler_Debug */
 }
-
-
 
 #ifdef USE_FULL_ASSERT
 /**
