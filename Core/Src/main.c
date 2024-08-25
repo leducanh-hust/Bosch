@@ -146,6 +146,7 @@ int main(void)
 
   __HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
 
+  USART3_SendString((uint8_t *)"Coder Lazada\n");
   while (1)
   {
     if (NumBytesReq != 0)
@@ -178,7 +179,7 @@ int main(void)
     }
     if (flag_CAN1_Received)
     {
-      USART3_SendString((uint8_t *)"Response: ");
+      USART3_SendString((uint8_t *)"ECU Response: ");
       PrintCANLog(CAN1_pHeaderRx.StdId, CAN1_DATA_RX);
       flag_CAN1_Received = 0;
     }
@@ -451,7 +452,6 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-
 void CAN1_Config()
 {
   CAN1_pHeader.IDE = CAN_ID_STD;
@@ -510,6 +510,7 @@ void USART3_SendString(uint8_t *ch)
     ch++;
   }
 }
+
 void PrintCANLog(uint16_t CANID, uint8_t *CAN_Frame)
 {
   uint16_t loopIndx = 0;
@@ -541,33 +542,38 @@ void PrintCANLog(uint16_t CANID, uint8_t *CAN_Frame)
 }
 /* USER CODE END 4 */
 
-void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan) {
-	HAL_StatusTypeDef ret;
-	if (hcan == &hcan1) {
-		ret = HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &CAN1_pHeaderRx,
-				CAN1_DATA_RX);
-		if (ret != HAL_OK) {
-			Error_Handler();
-		}
-		flag_CAN1_Received=1;
-		return;
-	}
-	if (hcan == &hcan2) {
-		ret = HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &CAN2_pHeaderRx,
-				CAN2_DATA_RX);
-		if (ret != HAL_OK) {
-			Error_Handler();
-		}
-		flag_CAN2_Received=1;
-		return;
-	}
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
+{
+  HAL_StatusTypeDef ret;
+  if (hcan == &hcan1)
+  {
+    ret = HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &CAN1_pHeaderRx,
+                               CAN1_DATA_RX);
+    if (ret != HAL_OK)
+    {
+      Error_Handler();
+    }
+    flag_CAN1_Received = 1;
+    return;
+  }
+  if (hcan == &hcan2)
+  {
+    ret = HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &CAN2_pHeaderRx,
+                               CAN2_DATA_RX);
+    if (ret != HAL_OK)
+    {
+      Error_Handler();
+    }
+    flag_CAN2_Received = 1;
+    return;
+  }
 }
 
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	REQ_BUFFER[NumBytesReq] = REQ_1BYTE_DATA;
-	NumBytesReq++;
-	//REQ_BUFFER[7] = NumBytesReq;
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  REQ_BUFFER[NumBytesReq] = REQ_1BYTE_DATA;
+  NumBytesReq++;
+  // REQ_BUFFER[7] = NumBytesReq;
 }
 /**
  * @brief  This function is executed in case of error occurrence.

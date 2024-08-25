@@ -69,9 +69,9 @@ extern void SID2E_Practice(uint8_t *data_tx, uint8_t *data_rx);
 
 //Other functions
 
-extern void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
+// extern void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 
-
+extern void Error_Handler(void);
 
 
 #endif // UDS_H
