@@ -13,6 +13,8 @@
 extern UART_HandleTypeDef huart3;
 extern uint8_t uart3_receive;
 
+extern unsigned int TimeStamp;
+
 extern CAN_HandleTypeDef hcan1;
 extern CAN_HandleTypeDef hcan2;
 extern CAN_TxHeaderTypeDef CAN1_pHeader;

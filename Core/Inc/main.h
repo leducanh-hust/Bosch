@@ -90,6 +90,8 @@ extern uint8_t CAN2_DATA_RX[8];
 extern uint8_t Flg_Consecutive;
 
 extern unsigned int TimeStamp;
+extern volatile uint8_t flag_Waiting;
+extern volatile uint8_t flag_SecurityUnlocked;
 
 extern void USART3_SendString(uint8_t *ch);
 void PrintCANLog(uint16_t CANID, uint8_t * CAN_Frame);
@@ -99,8 +101,7 @@ extern void MX_CAN2_Setup();
 extern void CAN1_Config();
 extern void CAN2_Config();
 
-extern uint8_t flag_SeedProvided;
-extern uint8_t flag_SecurityUnlocked ;
+extern volatile uint8_t flag_SeedProvided;
 
 extern uint16_t newStdId ;
 

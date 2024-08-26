@@ -9,8 +9,11 @@
 uint8_t Seed[4] = {0x01, 0x08, 0x82, 0x21};
 uint8_t Key[4] = {0x00, 0x00, 0x00, 0x00};
 
-uint8_t flag_SeedProvided = 0;
-uint8_t flag_SecurityUnlocked = 0;
+volatile uint8_t flag_SeedProvided = 0;
+volatile uint8_t flag_SecurityUnlocked = 0;
+volatile uint8_t flag_WrongKey = 0;
+volatile uint8_t flag_Waiting = 0;
+volatile int count_up = 0;
 
 uint16_t newStdId = 0x0000;
 
@@ -190,8 +193,22 @@ void SID27_Practice(uint8_t *data_tx, uint8_t *data_rx)
     switch (data_rx[2])
     {
     case 0x01: // Request Seed
+        if(flag_Waiting) // if last seed provides wrong key, wait for 10s
+        {
+            return;
+        }
         if (data_rx[0] == 0x02)
         {
+            if(flag_WrongKey)
+            {
+                flag_Waiting = 1;
+                HAL_TIM_Base_Start_IT(&htim2);
+                flag_WrongKey = 0;
+                char buf[30] = " ";
+                sprintf(buf, "%d Wrong Key, Waiting for 10s\n", TimeStamp);
+                USART3_SendString((uint8_t *)buf);
+                return;
+            }
             data_tx[0] = 0x06;
             data_tx[1] = data_rx[1] + 0x40;
             data_tx[2] = 0x01;
@@ -202,6 +219,7 @@ void SID27_Practice(uint8_t *data_tx, uint8_t *data_rx)
             data_tx[7] = 0x00;
             FormatCANFrame(data_tx);
             flag_SeedProvided = 1;
+
             // Expected Res: 06 67 01 55 55 55 55 55
         }
         else
@@ -224,14 +242,18 @@ void SID27_Practice(uint8_t *data_tx, uint8_t *data_rx)
             calculate_key_from_seed(Seed, Key);
             if (cmp_key(Key, &data_rx[3], 4)) // Key match and ECU is not unlocked
             {
+                if(flag_Waiting)
+                {
+                    return;
+                }
                 if (flag_SeedProvided == 1 && flag_SecurityUnlocked == 0)
                 {
                     HAL_TIM_Base_Start_IT(&htim2);
                     flag_SecurityUnlocked = 1;
                     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-
-                    USART3_SendString((uint8_t *)"Session Unlocked");
-
+                    char buf_unlocked[20] = " ";
+                    sprintf(buf_unlocked, "\n%d Session Unlocked\n", TimeStamp);
+                    USART3_SendString((uint8_t *)buf_unlocked);
                     data_tx[0] = 0x02;
                     data_tx[1] = data_rx[1] + 0x40;
                     data_tx[2] = 0x02;
@@ -248,6 +270,7 @@ void SID27_Practice(uint8_t *data_tx, uint8_t *data_rx)
 
             else // Key not match
             {
+                flag_WrongKey = 1;
                 data_tx[0] = 0x03;
                 data_tx[1] = NRC;
                 data_tx[2] = 0x27;
@@ -274,7 +297,7 @@ void SID27_Practice(uint8_t *data_tx, uint8_t *data_rx)
         break;
 
     default:
-        if (data_rx[0] != 0x02 || data_rx[0] != 0x06) 
+        if (data_rx[0])
         {
             data_tx[0] = 0x03;
             data_tx[1] = NRC;
@@ -362,14 +385,35 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim == &htim2)
     {
-        if (flag_SecurityUnlocked == 0)
-            return;
-        else
+        if (flag_SecurityUnlocked == 1)
+        {
+            count_up++;
+            if (count_up == 2)
         {
             HAL_TIM_Base_Stop_IT(&htim2);
             flag_SecurityUnlocked = 0;
             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
-            USART3_SendString((uint8_t *)"Session Locked");
+                char buf[20];
+                sprintf(buf, "%d Session Locked\n", TimeStamp);
+                USART3_SendString((uint8_t *)buf);
+
+                count_up = 0;
+            }
         }
+        if(flag_Waiting == 1)
+        {
+            count_up++;
+            if (count_up == 2)
+            {
+                HAL_TIM_Base_Stop_IT(&htim2);
+                flag_Waiting = 0;
+                char buf[30] = " ";
+                sprintf(buf, "%d 10 sec passed, continue with new seed\n", TimeStamp);
+                USART3_SendString((uint8_t *)buf);
+
+                count_up = 0;
+            }
+        }
+        
     }
 }

@@ -146,7 +146,7 @@ int main(void)
 
   __HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
 
-  USART3_SendString((uint8_t *)"Coder Lazada\n");
+  //USART3_SendString((uint8_t *)"Coder Lazada\n");
   while (1)
   {
     if (NumBytesReq != 0)
@@ -179,9 +179,16 @@ int main(void)
     }
     if (flag_CAN1_Received)
     {
+      if (flag_Waiting) // if last seed provides wrong key, wait for 10s, provide no response
+      {
+        return;
+      }
+      else
+      {
       USART3_SendString((uint8_t *)"ECU Response: ");
       PrintCANLog(CAN1_pHeaderRx.StdId, CAN1_DATA_RX);
       flag_CAN1_Received = 0;
+    }
     }
     if (!BtnU) /*IG OFF->ON stimulation*/
     {
@@ -351,7 +358,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 7999;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 49999;
+  htim2.Init.Period = 9999;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
