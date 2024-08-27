@@ -146,7 +146,7 @@ int main(void)
 
   __HAL_UART_ENABLE_IT(&huart3, UART_IT_RXNE);
 
-  //USART3_SendString((uint8_t *)"Coder Lazada\n");
+  // USART3_SendString((uint8_t *)"Coder Lazada\n");
   while (1)
   {
     if (NumBytesReq != 0)
@@ -179,16 +179,9 @@ int main(void)
     }
     if (flag_CAN1_Received)
     {
-      if (flag_Waiting) // if last seed provides wrong key, wait for 10s, provide no response
-      {
-        return;
-      }
-      else
-      {
-      USART3_SendString((uint8_t *)"ECU Response: ");
-      PrintCANLog(CAN1_pHeaderRx.StdId, CAN1_DATA_RX);
-      flag_CAN1_Received = 0;
-    }
+        USART3_SendString((uint8_t *)"ECU Response: ");
+        PrintCANLog(CAN1_pHeaderRx.StdId, CAN1_DATA_RX);
+        flag_CAN1_Received = 0;
     }
     if (!BtnU) /*IG OFF->ON stimulation*/
     {
@@ -560,7 +553,12 @@ void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
     {
       Error_Handler();
     }
-    flag_CAN1_Received = 1;
+    if(flag_Waiting == 1)
+    {
+      flag_CAN1_Received = 0;
+    }
+    else 
+      flag_CAN1_Received = 1;
     return;
   }
   if (hcan == &hcan2)

@@ -14,6 +14,7 @@ volatile uint8_t flag_SecurityUnlocked = 0;
 volatile uint8_t flag_WrongKey = 0;
 volatile uint8_t flag_Waiting = 0;
 volatile int count_up = 0;
+volatile int count_up1 = 0;
 
 uint16_t newStdId = 0x0000;
 
@@ -35,7 +36,7 @@ void CAN1_Send()
 {
     USART3_SendString((uint8_t *)"Tester Request: ");
     PrintCANLog(CAN1_pHeader.StdId, CAN1_DATA_TX);
-    if (HAL_CAN_AddTxMessage(&hcan1, &CAN1_pHeader, CAN1_DATA_TX,
+    if (HAL_CAN_AddTxMessage(&hca```    n1, &CAN1_pHeader, CAN1_DATA_TX,
                              &CAN1_pTxMailbox) != HAL_OK)
     {
         Error_Handler();
@@ -193,25 +194,21 @@ void SID27_Practice(uint8_t *data_tx, uint8_t *data_rx)
     switch (data_rx[2])
     {
     case 0x01: // Request Seed
-        if(flag_Waiting) // if last seed provides wrong key, wait for 10s
-        {
-            return;
-        }
         if (data_rx[0] == 0x02)
         {
-            if(flag_WrongKey)
+            if (flag_WrongKey)
             {
                 flag_Waiting = 1;
-                HAL_TIM_Base_Start_IT(&htim2);
                 flag_WrongKey = 0;
                 char buf[30] = " ";
-                sprintf(buf, "%d Wrong Key, Waiting for 10s\n", TimeStamp);
+                sprintf(buf, "%d Waiting for 10s\n", TimeStamp);
                 USART3_SendString((uint8_t *)buf);
-                return;
+                HAL_TIM_Base_Start_IT(&htim2);
             }
             data_tx[0] = 0x06;
             data_tx[1] = data_rx[1] + 0x40;
             data_tx[2] = 0x01;
+            
             for (int i = 3; i < 7; i++)
             {
                 data_tx[i] = Seed[i - 3];
@@ -242,27 +239,24 @@ void SID27_Practice(uint8_t *data_tx, uint8_t *data_rx)
             calculate_key_from_seed(Seed, Key);
             if (cmp_key(Key, &data_rx[3], 4)) // Key match and ECU is not unlocked
             {
-                if(flag_Waiting)
-                {
-                    return;
-                }
+
                 if (flag_SeedProvided == 1 && flag_SecurityUnlocked == 0)
                 {
                     HAL_TIM_Base_Start_IT(&htim2);
-                    flag_SecurityUnlocked = 1;
-                    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
                     char buf_unlocked[20] = " ";
                     sprintf(buf_unlocked, "\n%d Session Unlocked\n", TimeStamp);
                     USART3_SendString((uint8_t *)buf_unlocked);
+                    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+
                     data_tx[0] = 0x02;
                     data_tx[1] = data_rx[1] + 0x40;
                     data_tx[2] = 0x02;
                     for (int i = 3; i < 8; ++i)
                         data_tx[i] = 0x00;
                     FormatCANFrame(data_tx);
+                    flag_SecurityUnlocked = 1;
 
                     flag_SeedProvided = 0;
-                    
                 }
                 else // ECU is already unlocked
                     return;
@@ -270,7 +264,6 @@ void SID27_Practice(uint8_t *data_tx, uint8_t *data_rx)
 
             else // Key not match
             {
-                flag_WrongKey = 1;
                 data_tx[0] = 0x03;
                 data_tx[1] = NRC;
                 data_tx[2] = 0x27;
@@ -280,6 +273,8 @@ void SID27_Practice(uint8_t *data_tx, uint8_t *data_rx)
                     data_tx[i] = 0x00;
                 }
                 FormatCANFrame(data_tx);
+
+                flag_WrongKey = 1;
             }
         }
         if (data_rx[0] != 0x06)
@@ -309,7 +304,7 @@ void SID27_Practice(uint8_t *data_tx, uint8_t *data_rx)
             }
             FormatCANFrame(data_tx);
         }
-        
+
         break;
     }
     HAL_CAN_AddTxMessage(&hcan2, &CAN2_pHeader, data_tx, &CAN2_pTxMailbox);
@@ -319,54 +314,20 @@ void SID27_Practice(uint8_t *data_tx, uint8_t *data_rx)
 void SID2E_Practice(uint8_t *data_tx, uint8_t *data_rx)
 {
     HAL_Delay(100);
-    if (checkFormat(data_rx))
+    if (flag_SecurityUnlocked == 0)
     {
-        if (checkDID(data_rx))
+        data_tx[0] = 0x03;
+        data_tx[1] = NRC;
+        data_tx[2] = 0x2E;
+        data_tx[3] = ACCESS_DENIED;
+        for (int i = 4; i < 8; i++)
         {
-            if (flag_SecurityUnlocked == 1) // Normal Flow
-            {
-                data_tx[0] = 0x03;
-                data_tx[1] = data_rx[1] + 0x40;
-                data_tx[2] = data_rx[2];
-                data_tx[3] = data_rx[3];
-                data_tx[4] = 0x00;
-                data_tx[5] = 0x00;
-                data_tx[6] = 0x00;
-                data_tx[7] = 0x00;
-                FormatCANFrame(data_tx);
-                // Expected Res: 03 6E 01 23 55 55 55 55
-            }
-            else // Access Denied because ECU is locked
-            {
-                data_tx[0] = 0x03;
-                data_tx[1] = NRC;
-                data_tx[2] = 0x2E;
-                data_tx[3] = ACCESS_DENIED;
-                for (int i = 4; i < 8; i++)
-                {
-                    data_tx[i] = 0x00;
-                }
-                FormatCANFrame(data_tx);
-                // Expected Res: 03 7F 2E 33 55 55 55 55
-            }
+            data_tx[i] = 0x00;
         }
-        else
-        {
-            data_tx[0] = 0x03;
-            data_tx[1] = NRC;
-            data_tx[2] = 0x2E;
-            data_tx[3] = INVALID_DID;
-            for (int i = 4; i < 8; i++)
-            {
-                data_tx[i] = 0x00;
-            }
-            FormatCANFrame(data_tx);
-            // Expected Res: 03 7F 2E 31 55 55 55 55
-        }
+        FormatCANFrame(data_tx);
     }
-    else
+    else if (data_rx[0] < 5)
     {
-        newStdId = ((data_rx[4] << 8) | data_rx[5]) & 0x7FF;
         data_tx[0] = 0x03;
         data_tx[1] = NRC;
         data_tx[2] = 0x2E;
@@ -377,43 +338,69 @@ void SID2E_Practice(uint8_t *data_tx, uint8_t *data_rx)
         }
         FormatCANFrame(data_tx);
     }
-    HAL_CAN_AddTxMessage(&hcan2, &CAN2_pHeader, data_tx, &CAN2_pTxMailbox);
-    HAL_Delay(1000);
+    else if (((data_rx[2] << 8) | data_rx[3]) != 0x0123)
+    {
+        data_tx[0] = 0x03;
+        data_tx[1] = NRC;
+        data_tx[2] = 0x2E;
+        data_tx[3] = INVALID_DID;
+        for (int i = 4; i < 8; i++)
+        {
+            data_tx[i] = 0x00;
+        }
+        FormatCANFrame(data_tx);
+    }
+    else
+    {
+        newStdId = ((((uint32_t)data_rx[4]) << 8) | (data_rx[5])) & 0x7FF;
+        data_tx[0] = 0x03;
+        data_tx[1] = data_rx[1] + 0x40;
+        data_tx[2] = data_rx[2];
+        data_tx[3] = data_rx[3];
+        for (int i = 4; i < 8; i++)
+        {
+            data_tx[i] = 0x00;
+        }
+        FormatCANFrame(data_tx);
+    }
+
+    if (HAL_CAN_AddTxMessage(&hcan2, &CAN2_pHeader, data_tx, &CAN2_pTxMailbox) != HAL_OK)
+    {
+        Error_Handler();
+    }
+    HAL_Delay(100);
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim == &htim2)
     {
-        if (flag_SecurityUnlocked == 1)
+        if (!flag_WrongKey && !flag_SecurityUnlocked)
         {
-            count_up++;
-            if (count_up == 2)
+            return;
+        }
+        if (flag_SecurityUnlocked == 1)
         {
             HAL_TIM_Base_Stop_IT(&htim2);
             flag_SecurityUnlocked = 0;
             HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
-                char buf[20];
-                sprintf(buf, "%d Session Locked\n", TimeStamp);
-                USART3_SendString((uint8_t *)buf);
-
-                count_up = 0;
-            }
+            char buf[20];
+            sprintf(buf, "%d Session Locked\n", TimeStamp);
+            USART3_SendString((uint8_t *)buf);
         }
-        if(flag_Waiting == 1)
+    }
+    if (flag_Waiting == 1)
+    {
+        ++count_up;
+        if (count_up == 2)
         {
-            count_up++;
-            if (count_up == 2)
-            {
-                HAL_TIM_Base_Stop_IT(&htim2);
-                flag_Waiting = 0;
-                char buf[30] = " ";
-                sprintf(buf, "%d 10 sec passed, continue with new seed\n", TimeStamp);
-                USART3_SendString((uint8_t *)buf);
+            HAL_TIM_Base_Stop_IT(&htim2);
+            flag_Waiting = 0;
+            char buf[30] = " ";
+            sprintf(buf, "%d 10 sec passed, continue with new seed\n", TimeStamp);
+            USART3_SendString((uint8_t *)buf);
 
-                count_up = 0;
-            }
+            count_up = 0;
         }
-        
     }
 }
